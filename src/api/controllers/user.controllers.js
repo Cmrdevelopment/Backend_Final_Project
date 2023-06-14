@@ -21,6 +21,7 @@ const BASE_URL_COMPLETE = `${BASE_URL}${PORT}`;
 
 const register = async (req, res, next) => {
   let catchImg = req.file?.path;
+  console.log('register -> req.body: ', req.body)
   try {
     let confirmationCode = randomCode();
     const { email, name } = req.body;
@@ -71,6 +72,9 @@ const register = async (req, res, next) => {
 const registerSlow = async (req, res, next) => {
   let catchImg = req.file?.path;
   try {
+
+    console.log('registerSlow -> req.body: ', req.body)
+
     let confirmationCode = randomCode();
     const userEmail = req.body.email;
     const userName = req.body.name;
@@ -137,6 +141,8 @@ const registerSlow = async (req, res, next) => {
 //! -----------------------------------------------------------------------------
 const registerWithRedirect = async (req, res, next) => {
   let catchImg = req.file?.path;
+
+  console.log('registerWithRedirect -> req.body: ', req.body)
 
   try {
     let confirmationCode = randomCode();
