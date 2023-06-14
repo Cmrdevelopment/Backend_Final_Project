@@ -1,20 +1,16 @@
-const { deleteImgCloudinary } = require('../../middleware/files.middleware');
-const randomCode = require('../../utils/randomCode');
-const sendConfirmationCodeByEmail = require('../../utils/sendConfirmationCodeByEmail');
-const bcrypt = require('bcrypt');
-const dotenv = require('dotenv');
+const { deleteImgCloudinary } = require("../../middleware/files.middleware");
+const randomCode = require("../../utils/randomCode");
+const sendConfirmationCodeByEmail = require("../../utils/sendConfirmationCodeByEmail");
+const bcrypt = require("bcrypt");
+const dotenv = require("dotenv");
 dotenv.config();
-const User = require('../models/user.model');
-const { getTestEmailSend } = require('../../state/state.data');
-const nodemailer = require('nodemailer');
-const { generateToken } = require('../../utils/token');
-const randomPassword = require('../../utils/randomPassword');
-const { UserErrors, UserSuccess } = require('../../helpers/jsonResponseMsgs');
-const { setError } = require('../../helpers/handle-error');
-//const MobileDev = require('../models/MobileDev.model');
-//const App = require('../models/App.model');
-
-
+const User = require("../models/user.model");
+const { getTestEmailSend } = require("../../state/state.data");
+const nodemailer = require("nodemailer");
+const { generateToken } = require("../../utils/token");
+const randomPassword = require("../../utils/randomPassword");
+const { UserErrors, UserSuccess } = require("../../helpers/jsonResponseMsgs");
+const { setError } = require("../../helpers/handle-error");
 const PORT = process.env.PORT;
 const BASE_URL = process.env.BASE_URL;
 const BASE_URL_COMPLETE = `${BASE_URL}${PORT}`;
@@ -36,7 +32,7 @@ const register = async (req, res, next) => {
       if (req.file) {
         newUser.image = req.file.path;
       } else {
-        newUser.image = 'https://pic.onlinewebfonts.com/svg/img_181369.png';
+        newUser.image = "https://pic.onlinewebfonts.com/svg/img_181369.png";
       }
 
       const userSave = await newUser.save();
@@ -53,7 +49,7 @@ const register = async (req, res, next) => {
           } else {
             return res.status(404).json({
               user: userSave,
-              confirmationCode: 'Error, resend code',
+              confirmationCode: "Error, resend code",
             });
           }
         }, 1100);
@@ -61,7 +57,7 @@ const register = async (req, res, next) => {
     } else {
       if (req.file) deleteImgCloudinary(catchImg);
 
-      return res.status(409).json('This user already exist');
+      return res.status(409).json("This user already exist");
     }
   } catch (error) {
     if (req.file) deleteImgCloudinary(catchImg);
@@ -89,7 +85,7 @@ const registerSlow = async (req, res, next) => {
       if (req.file) {
         newUser.image = req.file.path;
       } else {
-        newUser.image = 'https://pic.onlinewebfonts.com/svg/img_181369.png';
+        newUser.image = "https://pic.onlinewebfonts.com/svg/img_181369.png";
       }
 
       const userSave = await newUser.save();
@@ -99,7 +95,7 @@ const registerSlow = async (req, res, next) => {
         const nodemailer_password = process.env.NODEMAILER_PASSWORD;
 
         const transporter = nodemailer.createTransport({
-          service: 'gmail',
+          service: "gmail",
           auth: {
             user: nodemailer_email,
             pass: nodemailer_password,
@@ -109,7 +105,7 @@ const registerSlow = async (req, res, next) => {
         const mailOptions = {
           from: nodemailer_email,
           to: userEmail,
-          subject: 'Confirmation code',
+          subject: "Confirmation code",
           text: `Hola! Tu codigo es ${confirmationCode}, gracias por confiar en nosotros ${userName}`,
         };
 
@@ -117,7 +113,7 @@ const registerSlow = async (req, res, next) => {
           if (error) {
             return res.status(404).json({
               user: userSave,
-              confirmationCode: 'Error, resend code',
+              confirmationCode: "Error, resend code",
             });
           } else {
             return res.status(200).json({
@@ -129,7 +125,7 @@ const registerSlow = async (req, res, next) => {
       }
     } else {
       if (req.file) deleteImgCloudinary(catchImg);
-      return res.status(409).json('This user already exist');
+      return res.status(409).json("This user already exist");
     }
   } catch (error) {
     if (req.file) deleteImgCloudinary(catchImg);
@@ -154,7 +150,7 @@ const registerWithRedirect = async (req, res, next) => {
       if (req.file) {
         newUser.image = req.file.path;
       } else {
-        newUser.image = 'https://pic.onlinewebfonts.com/svg/img_181369.png';
+        newUser.image = "https://pic.onlinewebfonts.com/svg/img_181369.png";
       }
 
       const userSave = await newUser.save();
@@ -166,7 +162,7 @@ const registerWithRedirect = async (req, res, next) => {
       }
     } else {
       if (req.file) deleteImgCloudinary(catchImg);
-      return res.status(409).json('This user already exist');
+      return res.status(409).json("This user already exist");
     }
   } catch (error) {
     if (req.file) deleteImgCloudinary(catchImg);
@@ -190,7 +186,7 @@ const sendCode = async (req, res, next) => {
     const password = process.env.NODEMAILER_PASSWORD;
 
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
         user: emailEnv,
         pass: password,
@@ -200,7 +196,7 @@ const sendCode = async (req, res, next) => {
     const mailOptions = {
       from: emailEnv,
       to: userDB.email,
-      subject: 'Confirmation code',
+      subject: "Confirmation code",
       text: `Hola! Tu codigo es ${userDB.confirmationCode}, gracias por confiar en nosotros ${userDB.name}`,
     };
 
@@ -209,10 +205,10 @@ const sendCode = async (req, res, next) => {
         console.log(error);
         return res.status(404).json({
           user: userDB,
-          confirmationCode: 'Error, resend code',
+          confirmationCode: "Error, resend code",
         });
       } else {
-        console.log('Email sent: ' + info.response);
+        console.log("Email sent: " + info.response);
         return res.status(200).json({
           user: userDB,
           confirmationCode: userDB.confirmationCode,
@@ -235,9 +231,9 @@ const login = async (req, res, next) => {
 
     const userDB = await User.findOne({ email: userEmail });
 
-    console.log('User email: ', userEmail);
-    console.log('userDB: ', userDB);
-    console.log('User password: ', userPassword);
+    console.log("User email: ", userEmail);
+    console.log("userDB: ", userDB);
+    console.log("User password: ", userPassword);
 
     if (userDB) {
       if (bcrypt.compareSync(userPassword, userDB.password)) {
@@ -276,9 +272,9 @@ const changeForgottenPassword = async (req, res, next) => {
         `${BASE_URL_COMPLETE}/api/v1/users/sendPassword/${userDb._id}`
       );
     } else {
-      return res.status(404).json('User no register');
+      return res.status(404).json("User no register");
     }
-  } catch (error) { }
+  } catch (error) {}
 };
 
 const sendPassword = async (req, res, next) => {
@@ -289,7 +285,7 @@ const sendPassword = async (req, res, next) => {
     const email = process.env.NODEMAILER_EMAIL;
     const password = process.env.NODEMAILER_PASSWORD;
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
         user: email,
         pass: password,
@@ -302,7 +298,7 @@ const sendPassword = async (req, res, next) => {
     const mailOptions = {
       from: email,
       to: userDb.email,
-      subject: '-----',
+      subject: "-----",
       text: `User: ${userDb.name}. Your new code login is ${passwordSecure} Hemos enviado esto porque tenemos una solicitud de cambio de contraseña, si no has sido ponte en contacto con nosotros, gracias.`,
     };
 
@@ -311,9 +307,9 @@ const sendPassword = async (req, res, next) => {
       if (error) {
         // si hay error quiere decir que ni hemos actualizado el user, ni enviamos email
         console.log(error);
-        return res.status(404).json('dont send email and dont update user');
+        return res.status(404).json("dont send email and dont update user");
       } else {
-        console.log('Email sent: ' + info.response);
+        console.log("Email sent: " + info.response);
         // ----> si hemos enviado el correo, hasheamos la contraseña y actualizamos el user
         const newPasswordBcrypt = bcrypt.hashSync(passwordSecure, 10);
         try {
@@ -403,7 +399,7 @@ const update = async (req, res, next) => {
     await User.findByIdAndUpdate(req.user._id, patchUser);
 
     if (req.file) {
-      console.log('entro');
+      console.log("entro");
       deleteImgCloudinary(req.user.image);
     }
 
@@ -418,16 +414,16 @@ const update = async (req, res, next) => {
         });
       }
     });
-    const MobileDev = require('../models/MobileDev.model');
-    const App = require('../models/App.model');
+    const MobileDev = require("../models/MobileDev.model");
+    const App = require("../models/App.model");
     if (req.file) {
       updateUser.image == req.file.path
         ? testUpdate.push({
-          file: true,
-        })
+            file: true,
+          })
         : testUpdate.push({
-          file: false,
-        });
+            file: false,
+          });
     }
 
     return res.status(200).json({
@@ -438,7 +434,6 @@ const update = async (req, res, next) => {
     return next(error);
   }
 };
-
 
 //! -----------------------------------------------------------------------------
 //? --------------------------- UPDATE TECHNOLOGY -------------------------------
@@ -451,7 +446,7 @@ const updateTechnologies = async (req, res, next) => {
       return res.status(200).json({
         oldUser: oldUser,
         newUser: await User.findById(id),
-        status: 'Succesfully technology updated!',
+        status: "Succesfully technology updated!",
       });
     } else {
       return res.status(404).json(UserErrors.FAIL_UPDATING_TECHNOLOGY);
@@ -461,7 +456,6 @@ const updateTechnologies = async (req, res, next) => {
   }
 };
 
-
 //! -----------------------------------------------------------------------------
 //? ----------------------------- DELETE ----------------------------------------
 //! -----------------------------------------------------------------------------
@@ -470,8 +464,6 @@ const updateTechnologies = async (req, res, next) => {
 //?------------------------------------------------------------------------------
 //!-Revisar en el excalidraw las funcionalidades adicionales que este delete debe tener
 //?------------------------------------------------------------------------------------
-
-
 
 const deleteUser = async (req, res, next) => {
   try {
@@ -506,11 +498,11 @@ const deleteUser = async (req, res, next) => {
 //! ---------------------------------------------------------------------
 const getAll = async (req, res, next) => {
   try {
-    const allUsers = await User.find().populate('mobileDevs').populate(`apps`);
+    const allUsers = await User.find().populate("mobileDevs").populate(`apps`);
     if (allUsers) {
       return res.status(200).json(allUsers);
     } else {
-      return res.status(404).json('No users found');
+      return res.status(404).json("No users found");
     }
   } catch (error) {
     return next(error);
@@ -523,13 +515,13 @@ const getAll = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log('getById -> id: ', req.params);
+    console.log("getById -> id: ", req.params);
 
-    const userById = await User.findById(id).populate('mobileDevs');
+    const userById = await User.findById(id).populate("mobileDevs");
     if (userById) {
       return res.status(200).json(userById);
     } else {
-      return res.status(404).json('No user found');
+      return res.status(404).json("No user found");
     }
   } catch (error) {
     return next(error);
@@ -543,16 +535,16 @@ const getByToken = async (req, res, next) => {
   try {
     //const { id } = req.params;
 
-    console.log('getByToken -> req.user: ', req.user);
+    console.log("getByToken -> req.user: ", req.user);
 
     //const userById = await User.findById(id).populate('mobileDevs');
     const userByToken = await User.findById(req.user._id)
-      .populate('mobileDevs')
+      .populate("mobileDevs")
       .populate(`apps`);
     if (userByToken) {
       return res.status(200).json(userByToken);
     } else {
-      return res.status(404).json('No user found');
+      return res.status(404).json("No user found");
     }
   } catch (error) {
     return next(error);
@@ -615,7 +607,7 @@ const checkNewUser = async (req, res, next) => {
     }
   } catch (error) {
     // siempre en el catch devolvemos un 500 con el error general
-    return next(setError(500, 'General error, check code'));
+    return next(setError(500, "General error, check code"));
   }
 };
 
@@ -639,14 +631,14 @@ const changeEmail = async (req, res, next) => {
         `${BASE_URL_COMPLETE}/api/v1/users/sendNewCode/${req.user._id}`
       );
     } else {
-      return res.status(404).json('Debe meter un email distinto al anterior');
+      return res.status(404).json("Debe meter un email distinto al anterior");
     }
   } catch (error) {
     return next(error);
   }
 };
 const sendNewCode = async (req, res, next) => {
-  console.log('despues redirect', req.body);
+  console.log("despues redirect", req.body);
   try {
     const { id } = req.params;
     const userDB = await User.findById(id);
@@ -654,7 +646,7 @@ const sendNewCode = async (req, res, next) => {
     const nodemailerPassword = process.env.NODEMAILER_PASSWORD;
 
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
         user: nodemailerEmail,
         pass: nodemailerPassword,
@@ -664,7 +656,7 @@ const sendNewCode = async (req, res, next) => {
     const mailOptions = {
       from: nodemailerEmail,
       to: userDB.emailChange,
-      subject: 'Confirmation code email change',
+      subject: "Confirmation code email change",
       text: `${userDB.name} you requested an email change, please insert the following confirmation code: ${userDB.confirmationCode} `,
     };
 
@@ -675,7 +667,7 @@ const sendNewCode = async (req, res, next) => {
           confirmationCode: UserErrors.FAIL_CHANGING_USER_EMAIL,
         });
       } else {
-        console.log('email sent: ' + info.response);
+        console.log("email sent: " + info.response);
         return res.status(200).json({
           email: UserSuccess.SUCCESS_CHANGING_USER_EMAIL,
           confirmationCode: userDB.confirmationCode,
@@ -713,7 +705,7 @@ const verifyNewEmail = async (req, res, next) => {
           return res
             .status(400)
             .json(
-              'El correo electrónico nuevo debe ser diferente al correo electrónico actual'
+              "El correo electrónico nuevo debe ser diferente al correo electrónico actual"
             );
         }
       } else {
@@ -729,7 +721,7 @@ const verifyNewEmail = async (req, res, next) => {
       }
     }
   } catch (error) {
-    return next(setError(500, 'General error, check code'));
+    return next(setError(500, "General error, check code"));
   }
 };
 
@@ -750,10 +742,10 @@ const autoLogin = async (req, res, next) => {
           token,
         });
       } else {
-        return res.status(404).json('password dont match');
+        return res.status(404).json("password dont match");
       }
     } else {
-      return res.status(404).json('User no register');
+      return res.status(404).json("User no register");
     }
   } catch (error) {
     return next(error);
@@ -770,7 +762,7 @@ const resendCode = async (req, res, next) => {
     const email = process.env.NODEMAILER_EMAIL;
     const password = process.env.NODEMAILER_PASSWORD;
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      service: "gmail",
       auth: {
         user: email,
         pass: password,
@@ -783,7 +775,7 @@ const resendCode = async (req, res, next) => {
       const mailOptions = {
         from: email,
         to: req.body.email,
-        subject: 'Confirmation code',
+        subject: "Confirmation code",
         text: `tu codigo es ${userExists.confirmationCode}`,
       };
 
@@ -791,17 +783,17 @@ const resendCode = async (req, res, next) => {
         if (error) {
           console.log(error);
         } else {
-          console.log('Email sent: ' + info.response);
+          console.log("Email sent: " + info.response);
           return res.status(200).json({
             resend: true,
           });
         }
       });
     } else {
-      return res.status(404).json('User not found');
+      return res.status(404).json("User not found");
     }
   } catch (error) {
-    return next(setError(500, error.message || 'Error general send code'));
+    return next(setError(500, error.message || "Error general send code"));
   }
 };
 
