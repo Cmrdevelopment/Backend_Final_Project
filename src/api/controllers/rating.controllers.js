@@ -11,34 +11,23 @@ const BASE_URL_COMPLETE = `${BASE_URL}${PORT}`;
 
 const create = async (req, res, next) => {
   try {
-    const { score, users, referenceUser, referenceOffer } = req.body;
+    const ratingBody = {
+      score: req.body.score,
+      users: req.body.users,
+      referenceUser: req.body.referenceUser,
+      referenceOffer: req.body.referenceOffer,
+    };
 
-    // Validar los datos antes de guardar en la base de datos.
-    if (!score || !users) {
-      return res
-        .status(400)
-        .json({ message: "Los campos score y users son requeridos" });
+    const newRating = new Ratings(ratingBody);
+    const savedRating = await newRating.save();
+
+    if (savedRating) {
+      return res.status(200).json(savedRating);
+    } else {
+      return res.status(404).json("Error creating rating");
     }
-
-    const rating = new Ratings({
-      score,
-      users,
-      referenceUser,
-      referenceOffer,
-    });
-
-    await rating.save();
-
-    return res.status(200).json({
-      message: "La valoración ha sido creada con éxito",
-      data: rating,
-    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Hubo un error al intentar crear la valoración",
-      error: error.message,
-    });
+    return next(error);
   }
 };
 
@@ -80,29 +69,40 @@ const deleteRating = async (req, res, next) => {
   }
 };
 
+//! -----------------------------------------------------------------------
+//? -------------------------------UPDATE RATING ---------------------------------
+//! -----------------------------------------------------------------------
+
+const updateRating = async (req, res, next) => {
+  try {
+    const { score, users, referenceUser, referenceOffer } = req.body;
+
+    const filterBody = {
+      score,
+      users,
+      referenceUser,
+      referenceOffer,
+    };
+
+    const { id } = req.params;
+    const ratingById = await Ratings.findById(id);
+    if (ratingById) {
+      const patchRating = new Ratings(filterBody);
+      patchRating._id = id;
+      await Ratings.findByIdAndUpdate(id, patchRating);
+      return res.status(200).json(await Ratings.findById(id));
+    } else {
+      return res.status(404).json({ message: "FAIL_UPDATING_RATING" });
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
+
+module.exports = updateRating;
+
 module.exports = {
   create,
   deleteRating,
+  updateRating,
 };
-
-// const create = async (req, res, next) => {
-//   try {
-//     const ratingBody = {
-//       score: req.body.score,
-//       users: req.body.users,
-//       referenceUser: req.body.referenceUser,
-//       referenceOffer: req.body.referenceOffer,
-//     };
-
-//     const newRating = new Ratings(ratingBody);
-//     const savedRating = await newRating.save();
-
-//     if (savedRating) {
-//       return res.status(200).json(savedRating);
-//     } else {
-//       return res.status(404).json("Error creating rating");
-//     }
-//   } catch (error) {
-//     return next(error);
-//   }
-// };
