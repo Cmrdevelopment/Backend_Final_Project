@@ -4,7 +4,7 @@ const RatingsSchema = new mongoose.Schema(
   {
     //Puntuacion. Pendiente de revisar con el equipo: el enum.
     score: {
-      type: number,
+      type: String,
       enum: ["1", "2", "3", "4", "5"],
       required: true,
     },
@@ -13,7 +13,7 @@ const RatingsSchema = new mongoose.Schema(
     users: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "User",
-      required: true,
+      required: false,
     },
 
     // Reference: Populado (usuario, oferta) (Preguntar a pedro a que se refiere? Se refiere al textArea donde escribes el comentario, que puede ser tanto para el user como para la oferta?)

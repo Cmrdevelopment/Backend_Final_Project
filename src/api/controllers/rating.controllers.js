@@ -69,7 +69,40 @@ const deleteRating = async (req, res, next) => {
   }
 };
 
+//! -----------------------------------------------------------------------
+//? -------------------------------UPDATE RATING ---------------------------------
+//! -----------------------------------------------------------------------
+
+const updateRating = async (req, res, next) => {
+  try {
+    const { score, users, referenceUser, referenceOffer } = req.body;
+
+    const filterBody = {
+      score,
+      users,
+      referenceUser,
+      referenceOffer,
+    };
+
+    const { id } = req.params;
+    const ratingById = await Ratings.findById(id);
+    if (ratingById) {
+      const patchRating = new Ratings(filterBody);
+      patchRating._id = id;
+      await Ratings.findByIdAndUpdate(id, patchRating);
+      return res.status(200).json(await Ratings.findById(id));
+    } else {
+      return res.status(404).json({ message: "FAIL_UPDATING_RATING" });
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
+
+module.exports = updateRating;
+
 module.exports = {
   create,
   deleteRating,
+  updateRating,
 };

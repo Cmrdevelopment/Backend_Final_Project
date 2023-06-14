@@ -28,8 +28,10 @@ app.use(express.urlencoded({ limit: "5mb", extended: false }));
 
 //! -----ROUTES-----------
 const UserRoutes = require("./src/api/routes/user.routes");
+const ratingRoutes = require("./src/api/routes/rating.routes");
 
 app.use("/api/v1/users", UserRoutes);
+app.use("/api/v1/rating", ratingRoutes);
 
 //! Cuando no se mete ninguna routa
 app.use("*", (req, res, next) => {
