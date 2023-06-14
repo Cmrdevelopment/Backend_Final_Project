@@ -34,7 +34,7 @@ UserRoutes.patch('/forgotpassword/forgotpassword/', changeForgottenPassword);
 UserRoutes.post('/login', login);
 UserRoutes.patch('/changepassword', [isAuth], changePassword);
 UserRoutes.patch('/update/update', [isAuth], upload.single('image'), update);
-UserRoutes.patch('/updateTechology', [isAuth], updateTechnologies);
+UserRoutes.patch('/updateTechnology', [isAuth], updateTechnologies);
 UserRoutes.delete('/', [isAuth], deleteUser);
 UserRoutes.post('/check', checkNewUser);
 UserRoutes.post('/changeEmail/', [isAuth], changeEmail);
