@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 
 const OfferSchema = new mongoose.Schema(
   {
+    //Nombre Oferta
+    offerName: { type: String, required: true },
     // Tipo de la oferta
     offerType: {
       type: String,
