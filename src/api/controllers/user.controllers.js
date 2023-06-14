@@ -278,7 +278,7 @@ const changeForgottenPassword = async (req, res, next) => {
     } else {
       return res.status(404).json('User no register');
     }
-  } catch (error) {}
+  } catch (error) { }
 };
 
 const sendPassword = async (req, res, next) => {
@@ -423,11 +423,11 @@ const update = async (req, res, next) => {
     if (req.file) {
       updateUser.image == req.file.path
         ? testUpdate.push({
-            file: true,
-          })
+          file: true,
+        })
         : testUpdate.push({
-            file: false,
-          });
+          file: false,
+        });
     }
 
     return res.status(200).json({
@@ -438,6 +438,29 @@ const update = async (req, res, next) => {
     return next(error);
   }
 };
+
+
+//! -----------------------------------------------------------------------------
+//? --------------------------- UPDATE TECHNOLOGY -------------------------------
+//! -----------------------------------------------------------------------------
+const updateTechnologies = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const oldUser = await User.findByIdAndUpdate(id, req.body);
+    if (oldUser) {
+      return res.status(200).json({
+        oldUser: oldUser,
+        newUser: await User.findById(id),
+        status: 'Succesfully technology updated!',
+      });
+    } else {
+      return res.status(404).json(UserErrors.FAIL_UPDATING_TECHNOLOGY);
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
+
 
 //! -----------------------------------------------------------------------------
 //? ----------------------------- DELETE ----------------------------------------
@@ -792,6 +815,7 @@ module.exports = {
   sendPassword,
   changePassword,
   update,
+  updateTechnologies,
   deleteUser,
   getAll,
   getById,
