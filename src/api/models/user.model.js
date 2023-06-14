@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 
- 
+
 const UserSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true, unique: false },
@@ -35,7 +35,7 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    
+
     //Pendiente de revisar
     emailChange: {
       type: String,
@@ -49,7 +49,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: ["admin", "freelance", "company"],
       required: true,
-  
+
     },
 
     technologies: [{

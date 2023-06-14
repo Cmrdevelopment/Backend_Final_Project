@@ -7,7 +7,7 @@ const {
 const express = require('express');
 const ExperienceRoutes = express.Router();
 
-ExperienceRoutes.post('/create', getAll);
+ExperienceRoutes.post('/create', createExperience);
 
 
-module.exports = UserRoutes;
+module.exports = ExperienceRoutes;

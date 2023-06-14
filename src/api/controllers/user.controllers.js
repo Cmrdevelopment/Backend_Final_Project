@@ -21,7 +21,7 @@ const BASE_URL_COMPLETE = `${BASE_URL}${PORT}`;
 
 const register = async (req, res, next) => {
   let catchImg = req.file?.path;
-  console.log('register -> req.body: ', req.body)
+  //console.log('register -> req.body: ', req.body)
   try {
     let confirmationCode = randomCode();
     const { email, name } = req.body;
@@ -72,9 +72,6 @@ const register = async (req, res, next) => {
 const registerSlow = async (req, res, next) => {
   let catchImg = req.file?.path;
   try {
-
-    console.log('registerSlow -> req.body: ', req.body)
-
     let confirmationCode = randomCode();
     const userEmail = req.body.email;
     const userName = req.body.name;
@@ -115,11 +112,15 @@ const registerSlow = async (req, res, next) => {
 
         transporter.sendMail(mailOptions, function (error) {
           if (error) {
+            console.log('send mail error, error: ', error)
+
             return res.status(404).json({
               user: userSave,
               confirmationCode: "Error, resend code",
             });
           } else {
+            console.log('send mail ok,: ')
+
             return res.status(200).json({
               user: userSave,
               confirmationCode,
@@ -280,7 +281,7 @@ const changeForgottenPassword = async (req, res, next) => {
     } else {
       return res.status(404).json("User no register");
     }
-  } catch (error) {}
+  } catch (error) { }
 };
 
 const sendPassword = async (req, res, next) => {
@@ -312,7 +313,7 @@ const sendPassword = async (req, res, next) => {
     transporter.sendMail(mailOptions, async function (error, info) {
       if (error) {
         // si hay error quiere decir que ni hemos actualizado el user, ni enviamos email
-        console.log(error);
+        console.log("error Nodemailer: ", error);
         return res.status(404).json("dont send email and dont update user");
       } else {
         console.log("Email sent: " + info.response);
@@ -405,7 +406,6 @@ const update = async (req, res, next) => {
     await User.findByIdAndUpdate(req.user._id, patchUser);
 
     if (req.file) {
-      console.log("entro");
       deleteImgCloudinary(req.user.image);
     }
 
@@ -425,11 +425,11 @@ const update = async (req, res, next) => {
     if (req.file) {
       updateUser.image == req.file.path
         ? testUpdate.push({
-            file: true,
-          })
+          file: true,
+        })
         : testUpdate.push({
-            file: false,
-          });
+          file: false,
+        });
     }
 
     return res.status(200).json({
@@ -446,12 +446,13 @@ const update = async (req, res, next) => {
 //! -----------------------------------------------------------------------------
 const updateTechnologies = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const oldUser = await User.findByIdAndUpdate(id, req.body);
+    const { _id } = req.user._id
+
+    const oldUser = await User.findByIdAndUpdate(_id, req.body);
     if (oldUser) {
       return res.status(200).json({
         oldUser: oldUser,
-        newUser: await User.findById(id),
+        newUser: await User.findById(_id),
         status: "Succesfully technology updated!",
       });
     } else {
@@ -504,7 +505,8 @@ const deleteUser = async (req, res, next) => {
 //! ---------------------------------------------------------------------
 const getAll = async (req, res, next) => {
   try {
-    const allUsers = await User.find().populate("mobileDevs").populate(`apps`);
+    //const allUsers = await User.find().populate("mobileDevs").populate(`apps`);
+    const allUsers = await User.find().populate("ratingsByOthers");
     if (allUsers) {
       return res.status(200).json(allUsers);
     } else {
@@ -521,9 +523,9 @@ const getAll = async (req, res, next) => {
 const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log("getById -> id: ", req.params);
 
-    const userById = await User.findById(id).populate("mobileDevs");
+    const userById = await User.findById(id).populate("ratingsByOthers");
+    //const userById = await User.findById(id).populate("like");
     if (userById) {
       return res.status(200).json(userById);
     } else {
@@ -541,7 +543,7 @@ const getByToken = async (req, res, next) => {
   try {
     //const { id } = req.params;
 
-    console.log("getByToken -> req.user: ", req.user);
+    //console.log("getByToken -> req.user: ", req.user);
 
     //const userById = await User.findById(id).populate('mobileDevs');
     const userByToken = await User.findById(req.user._id)
@@ -644,7 +646,7 @@ const changeEmail = async (req, res, next) => {
   }
 };
 const sendNewCode = async (req, res, next) => {
-  console.log("despues redirect", req.body);
+  //console.log("despues redirect", req.body);
   try {
     const { id } = req.params;
     const userDB = await User.findById(id);
