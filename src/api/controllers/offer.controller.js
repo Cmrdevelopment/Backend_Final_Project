@@ -1,6 +1,7 @@
 const User = require('../models/user.model');
 const Ratings = require('../models/ratings.model');
 const Comment = require('../models/comment.model');
+const Offer = require('../models/offer.model');
 
 //! -----------------------------------------------------------------------
 //? -------------------------------CREATE OFFER ---------------------------------
