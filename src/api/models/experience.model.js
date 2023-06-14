@@ -16,7 +16,10 @@ const ExperienceSchema = new mongoose.Schema(
     },
     
     //Tecnologías con las que se trabajó en la experiencia laboral
-    technologies: { type: String },
+    technologies: [{ 
+      type: String,
+      required: true
+    }],
 
     // Descripcion
     description: {
