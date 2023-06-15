@@ -10,8 +10,6 @@ const {
     changePassword,
     update,
     updateTechnologies,
-    updateRatingsByMe,
-    updateRatingsByOthers,
     deleteUser,
     getAll,
     getById,
@@ -37,8 +35,8 @@ UserRoutes.post('/login', login);
 UserRoutes.patch('/changepassword', [isAuth], changePassword);
 UserRoutes.patch('/update/update', [isAuth], upload.single('image'), update);
 UserRoutes.patch('/updateTechnology', [isAuth], updateTechnologies);
-UserRoutes.patch('/updateRatingsByMe', [isAuth], updateRatingsByMe);
-UserRoutes.patch('/updateRatingsByOthers', [isAuth], updateRatingsByOthers);
+// UserRoutes.patch('/updateRatingsByMe', [isAuth], updateRatingsByMe);
+// UserRoutes.patch('/updateRatingsByOthers', [isAuth], updateRatingsByOthers);
 UserRoutes.delete('/', [isAuth], deleteUser);
 UserRoutes.post('/check', checkNewUser);
 UserRoutes.post('/changeEmail/', [isAuth], changeEmail);

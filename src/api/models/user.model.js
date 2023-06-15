@@ -56,31 +56,31 @@ const UserSchema = new mongoose.Schema(
       },
     ],
 
-    offersCreated: {
+    offersCreated: [{
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Offer",
       required: false,
-    },
+    }],
 
-    offersInterested: {
+    offersInterested: [{
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Offer",
       required: false,
-    },
+    }],
 
     // Comentarios hechos por me
-    commentsByMe: {
+    commentsByMe: [{
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Comment",
       required: false,
-    },
+    }],
 
     // Comentarios hechos por otros (a mi)
-    commentsByOthers: {
+    commentsByOthers: [{
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Comment",
       required: false,
-    },
+    }],
 
     // Valoraciones hechas por me
     ratingsByMe: [
@@ -100,28 +100,36 @@ const UserSchema = new mongoose.Schema(
       },
     ],
 
-    experience: {
+    experience: [{
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Experience",
       required: false,
-    },
+    }],
 
     banned: {
       type: Boolean,
       default: false,
     },
 
-    usersFollowed: {
+    // users a los que yo sigo
+    following: [{
       type: [mongoose.Schema.Types.ObjectId],
       ref: "User",
       required: false,
-    },
+    }],
 
-    like: {
+    // user que me siguen
+    followers: [{
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      required: false,
+    }],
+
+    like: [{
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Comment",
       required: true,
-    },
+    }],
   },
   {
     timestamps: true, // timestamp
