@@ -100,6 +100,12 @@ const UserSchema = new mongoose.Schema(
       },
     ],
 
+    referenceDeveloper: [{
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      required: false,
+    }],
+
     experience: [{
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Experience",

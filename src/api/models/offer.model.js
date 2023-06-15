@@ -19,6 +19,12 @@ const OfferSchema = new mongoose.Schema(
       required: false,
     },
 
+    referenceOffer: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Offer",
+      required: false,
+    },
+
     description: {
       type: String,
       required: true,

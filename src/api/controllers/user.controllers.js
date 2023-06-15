@@ -11,6 +11,12 @@ const { generateToken } = require("../../utils/token");
 const randomPassword = require("../../utils/randomPassword");
 const { UserErrors, UserSuccess } = require("../../helpers/jsonResponseMsgs");
 const { setError } = require("../../helpers/handle-error");
+
+const Ratings = require("../models/ratings.model")
+const Offer = require("../models/offer.model")
+const Experience = require("../models/experience.model")
+const Comment = require("../models/comment.model")
+
 const PORT = process.env.PORT;
 const BASE_URL = process.env.BASE_URL;
 const BASE_URL_COMPLETE = `${BASE_URL}${PORT}`;
@@ -523,18 +529,35 @@ const deleteUser = async (req, res, next) => {
       return res.status(404).json(UserErrors.FAIL_DELETING_USER);
     } else {
       deleteImgCloudinary(image);
-      await App.updateMany(
+
+      await Ratings.updateMany(
         { users: _id },
         {
           $pull: { users: _id },
         }
       );
-      await MobileDev.updateMany(
+
+      await Offer.updateMany(
         { users: _id },
         {
           $pull: { users: _id },
         }
       );
+
+      await Experience.updateMany(
+        { users: _id },
+        {
+          $pull: { users: _id },
+        }
+      );
+
+      await Comment.updateMany(
+        { users: _id },
+        {
+          $pull: { users: _id },
+        }
+      );
+
       return res.status(200).json(UserSuccess.SUCCESS_DELETING_USER);
     }
   } catch (error) {
@@ -548,7 +571,6 @@ const deleteUser = async (req, res, next) => {
 //! ---------------------------------------------------------------------
 const getAll = async (req, res, next) => {
   try {
-    //const allUsers = await User.find().populate("mobileDevs").populate(`apps`);
     const allUsers = await User.find().populate("ratingsByOthers");
     if (allUsers) {
       return res.status(200).json(allUsers);
@@ -568,7 +590,6 @@ const getById = async (req, res, next) => {
     const { id } = req.params;
 
     const userById = await User.findById(id).populate("ratingsByOthers");
-    //const userById = await User.findById(id).populate("like");
     if (userById) {
       return res.status(200).json(userById);
     } else {
