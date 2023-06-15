@@ -5,37 +5,50 @@ const User = require('../models/user.model');
 //? ---------------------------- CREATE -----------------------------------------
 //! -----------------------------------------------------------------------------
 
-const createExperience = async (req, res, next) => {
+const createExperience = async (req, res) => {
+  
+    let cathImg = req.file?.path
     try {
-        const userId = req.params.userId; // Obtén el ID del usuario desde los parámetros de la solicitud
-
-        // Busca al usuario por su ID
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
-        }
-
-        // Crea una nueva experiencia con los datos de la solicitud
-        const newExperience = new Experience({
-            workedWith: req.body.workedWith,
-            duration: req.body.duration,
-            technologies: req.body.technologies,
-            description: req.body.description,
-            image: req.body.image
-        });
-
-        // Guarda la nueva experiencia en la base de datos
+   
+    const experienceBody = {
+      workedWith: req.body.workedWith,
+      duration: req.body.duration,
+      technologies: req.body.technologies,
+      description: req.body.description,
+      image: cathImg,
+    };
+    console.log(experienceBody);
+    const newExperience = new Experience(experienceBody);
+    try {
         const savedExperience = await newExperience.save();
+        if (savedExperience){
+            try {
+                await User.findByIdAndUpdate(req.user._id, {
+                    $push:{experience:newExperience._id}
+                })
+            return res.status(200).json(newExperience);
 
-        // Agrega la experiencia al usuario
-        user.experiences.push(savedExperience._id);
-        await user.save();
-
-        res.status(201).json(savedExperience);
+            } catch (error) {
+                return res.status(404).json("Error updating user experience")
+            }
+        } else {
+            return res.status(404).json("Error creating experience")
+        }
     } catch (error) {
-        res.status(500).json({ error: 'Error al crear la experiencia' });
+        console.log(error);
+        return res.status(404).json('Error saving experience')
+    }
+    
+    } catch (error) {
+        return res.status(500).json(error.message);
     }
 };
+
+//! -----------------------------------------------------------------------------
+//? ---------------------------- GetAll -----------------------------------------
+//! -----------------------------------------------------------------------------
+
+
 
 //! -----------------------------------------------------------------------------
 //? ---------------------------- GetById -----------------------------------------

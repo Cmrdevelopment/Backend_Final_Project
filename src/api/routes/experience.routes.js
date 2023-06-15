@@ -7,7 +7,7 @@ const {
 const express = require('express');
 const ExperienceRoutes = express.Router();
 
-ExperienceRoutes.post('/create', createExperience);
+ExperienceRoutes.post('/create',[isAuth], upload.single('image'), createExperience);
 
 
 module.exports = ExperienceRoutes;

@@ -30,7 +30,6 @@ const ExperienceSchema = new mongoose.Schema(
     //Imagen ¿Sería necesario? consultar con el equipo.
     image: {
       type: String,
-      required: true,
     },
 
   },
