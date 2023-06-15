@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 
-
 const UserSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true, unique: false },
@@ -49,75 +48,88 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: ["admin", "freelance", "company"],
       required: true,
-
     },
 
-    technologies: [{
-      type: String,
+    technologies: [
+      {
+        type: String,
+      },
+    ],
+
+    offersCreated: [{
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Offer",
+      required: false,
     }],
 
-    offersCreated: {
+    offersInterested: [{
       type: [mongoose.Schema.Types.ObjectId],
-      ref: 'Offer',
-      required: false
-    },
-
-    offersInterested: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: 'Offer',
-      required: false
-    },
+      ref: "Offer",
+      required: false,
+    }],
 
     // Comentarios hechos por me
-    commentsByMe: {
+    commentsByMe: [{
       type: [mongoose.Schema.Types.ObjectId],
-      ref: 'Comment',
-      required: false
-    },
-
-    // Comentarios hechos por otros (a mi)
-    commentsByOthers: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: 'Comment',
-      required: false
-    },
-
-    // Valoraciones hechas por me
-    ratingsByMe: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: 'Ratings',
-      required: false
-    },
-
-    // Valoraciones hechas por otros (a mi)
-    ratingsByOthers: [{
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: 'Ratings',
-      required: false
+      ref: "Comment",
+      required: false,
     }],
 
-    experience: {
+    // Comentarios hechos por otros (a mi)
+    commentsByOthers: [{
       type: [mongoose.Schema.Types.ObjectId],
-      ref: 'Experience',
-      required: false
-    },
+      ref: "Comment",
+      required: false,
+    }],
+
+    // Valoraciones hechas por me
+    ratingsByMe: [
+      {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Ratings",
+        required: false,
+      },
+    ],
+
+    // Valoraciones hechas por otros (a mi)
+    ratingsByOthers: [
+      {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Ratings",
+        required: false,
+      },
+    ],
+
+    experience: [{
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Experience",
+      required: false,
+    }],
 
     banned: {
       type: Boolean,
       default: false,
     },
 
-    usersFollowed: {
+    // users a los que yo sigo
+    following: [{
       type: [mongoose.Schema.Types.ObjectId],
-      ref: 'User',
-      required: false
-    },
+      ref: "User",
+      required: false,
+    }],
 
-    like: {
+    // user que me siguen
+    followers: [{
       type: [mongoose.Schema.Types.ObjectId],
-      ref: 'Comment',
+      ref: "User",
+      required: false,
+    }],
+
+    like: [{
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Comment",
       required: true,
-    },
+    }],
   },
   {
     timestamps: true, // timestamp

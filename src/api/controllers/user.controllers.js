@@ -18,7 +18,6 @@ const BASE_URL_COMPLETE = `${BASE_URL}${PORT}`;
 //! -----------------------------------------------------------------------------
 //? ----------------------------REGISTER CORTO EN CODIGO ------------------------
 //! -----------------------------------------------------------------------------
-
 const register = async (req, res, next) => {
   let catchImg = req.file?.path;
   //console.log('register -> req.body: ', req.body)
@@ -36,24 +35,27 @@ const register = async (req, res, next) => {
         newUser.image = "https://pic.onlinewebfonts.com/svg/img_181369.png";
       }
 
-      const userSave = await newUser.save();
+      try {
+        const userSave = await newUser.save();
 
-      if (userSave) {
-        sendConfirmationCodeByEmail(email, name, confirmationCode);
-
-        setTimeout(() => {
-          if (getTestEmailSend()) {
-            return res.status(200).json({
-              user: userSave,
-              confirmationCode,
-            });
-          } else {
-            return res.status(404).json({
-              user: userSave,
-              confirmationCode: "Error, resend code",
-            });
-          }
-        }, 1100);
+        if (userSave) {
+          sendConfirmationCodeByEmail(email, name, confirmationCode);
+          setTimeout(() => {
+            if (getTestEmailSend()) {
+              return res.status(200).json({
+                user: userSave,
+                confirmationCode,
+              });
+            } else {
+              return res.status(404).json({
+                user: userSave,
+                confirmationCode: "Error, resend code",
+              });
+            }
+          }, 1100);
+        }
+      } catch (error) {
+        return res.status(404).json("failed saving user")
       }
     } else {
       if (req.file) deleteImgCloudinary(catchImg);
@@ -89,44 +91,49 @@ const registerSlow = async (req, res, next) => {
         newUser.image = "https://pic.onlinewebfonts.com/svg/img_181369.png";
       }
 
-      const userSave = await newUser.save();
+      try {
+        const userSave = await newUser.save();
 
-      if (userSave) {
-        const nodemailer_email = process.env.NODEMAILER_EMAIL;
-        const nodemailer_password = process.env.NODEMAILER_PASSWORD;
+        if (userSave) {
+          const nodemailer_email = process.env.NODEMAILER_EMAIL;
+          const nodemailer_password = process.env.NODEMAILER_PASSWORD;
 
-        const transporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            user: nodemailer_email,
-            pass: nodemailer_password,
-          },
-        });
+          const transporter = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: nodemailer_email,
+              pass: nodemailer_password,
+            },
+          });
 
-        const mailOptions = {
-          from: nodemailer_email,
-          to: userEmail,
-          subject: "Confirmation code",
-          text: `Hola! Tu codigo es ${confirmationCode}, gracias por confiar en nosotros ${userName}`,
-        };
+          const mailOptions = {
+            from: nodemailer_email,
+            to: userEmail,
+            subject: "Confirmation code",
+            text: `Hola! Tu codigo es ${confirmationCode}, gracias por confiar en nosotros ${userName}`,
+          };
 
-        transporter.sendMail(mailOptions, function (error) {
-          if (error) {
-            console.log('send mail error, error: ', error)
+          transporter.sendMail(mailOptions, function (error) {
+            if (error) {
+              console.log('send mail error, error: ', error)
 
-            return res.status(404).json({
-              user: userSave,
-              confirmationCode: "Error, resend code",
-            });
-          } else {
-            console.log('send mail ok,: ')
+              return res.status(404).json({
+                user: userSave,
+                confirmationCode: "Error, resend code",
+              });
+            } else {
+              console.log('send mail ok,: ')
 
-            return res.status(200).json({
-              user: userSave,
-              confirmationCode,
-            });
-          }
-        });
+              return res.status(200).json({
+                user: userSave,
+                confirmationCode,
+              });
+            }
+          });
+        }
+      } catch (error) {
+        return res.status(404).json("failed saving user")
+
       }
     } else {
       if (req.file) deleteImgCloudinary(catchImg);
@@ -160,12 +167,17 @@ const registerWithRedirect = async (req, res, next) => {
         newUser.image = "https://pic.onlinewebfonts.com/svg/img_181369.png";
       }
 
-      const userSave = await newUser.save();
+      try {
+        const userSave = await newUser.save();
 
-      if (userSave) {
-        return res.redirect(
-          `${BASE_URL_COMPLETE}/api/v1/users/register/sendMail/${userSave._id}`
-        );
+        if (userSave) {
+          return res.redirect(
+            `${BASE_URL_COMPLETE}/api/v1/users/register/sendMail/${userSave._id}`
+          );
+        }
+      } catch (error) {
+        return res.status(404).json("failed saving user")
+
       }
     } else {
       if (req.file) deleteImgCloudinary(catchImg);
@@ -360,18 +372,24 @@ const changePassword = async (req, res, next) => {
     if (bcrypt.compareSync(password, req.user.password)) {
       const newPasswordHashed = bcrypt.hashSync(newPassword, 10);
 
-      await User.findByIdAndUpdate(_id, { password: newPasswordHashed });
+      try {
+        await User.findByIdAndUpdate(_id, { password: newPasswordHashed });
 
-      const userUpdate = await User.findById(_id);
+        const userUpdate = await User.findById(_id);
 
-      if (bcrypt.compareSync(newPassword, userUpdate.password)) {
-        return res.status(200).json({
-          updateUser: true,
-        });
-      } else {
-        return res.status(200).json({
-          updateUser: false,
-        });
+        if (bcrypt.compareSync(newPassword, userUpdate.password)) {
+          return res.status(200).json({
+            updateUser: true,
+          });
+        } else {
+          return res.status(200).json({
+            updateUser: false,
+          });
+        }
+
+      } catch (error) {
+        return res.status(404).json("failed updating password")
+
       }
     } else {
       return res.status(404).json(UserErrors.FAIL_MATCHING_PASSWORDS);
@@ -386,11 +404,12 @@ const changePassword = async (req, res, next) => {
 //! -----------------------------------------------------------------------------
 const update = async (req, res, next) => {
   let catchImg = req.file?.path;
+  const { name, surname, description, city, image } = req.body
+  // hacer un update especial para las tecnologias y un controlador para seguir a la gente 
 
   try {
     const filterBody = {
-      name: req.body.name,
-      gender: req.body.gender,
+      name, surname, description, city, image
     };
     const patchUser = new User(filterBody);
 
@@ -401,40 +420,62 @@ const update = async (req, res, next) => {
     patchUser._id = req.user._id;
     patchUser.password = req.user.password;
     patchUser.rol = req.user.rol;
+    patchUser.email = req.user.email;
     patchUser.check = req.user.check;
+    patchUser.confirmationCode = req.user.confirmationCode;
+    patchUser.emailChange = req.user.emailChange;
+    patchUser.technologies = req.user.technologies;
+    patchUser.offersCreated = req.user.offersCreated;
+    patchUser.offersInterested = req.user.offersInterested;
+    patchUser.commentsByMe = req.user.commentsByMe;
 
-    await User.findByIdAndUpdate(req.user._id, patchUser);
+    patchUser.commentsByOthers = req.user.commentsByOthers;
+    patchUser.ratingsByMe = req.user.ratingsByMe;
+    patchUser.ratingsByOthers = req.user.ratingsByOthers;
+    patchUser.experience = req.user.experience;
 
-    if (req.file) {
-      deleteImgCloudinary(req.user.image);
-    }
+    patchUser.banned = req.user.banned;
+    patchUser.following = req.user.following;
+    patchUser.followers = req.user.followers;
+    patchUser.like = req.user.like;
 
-    const updateUser = await User.findById(req.user._id);
-    const updateKeys = Object.keys(req.body);
+    try {
+      await User.findByIdAndUpdate(req.user._id, patchUser);
 
-    const testUpdate = [];
-    updateKeys.forEach((key) => {
-      if (updateUser[key] === req.body[key]) {
-        testUpdate.push({
-          [key]: true,
-        });
+      if (req.file) {
+        deleteImgCloudinary(req.user.image);
       }
-    });
-    const MobileDev = require("../models/MobileDev.model");
-    const App = require("../models/App.model");
-    if (req.file) {
-      updateUser.image == req.file.path
-        ? testUpdate.push({
-          file: true,
-        })
-        : testUpdate.push({
-          file: false,
-        });
-    }
 
-    return res.status(200).json({
-      testUpdate,
-    });
+      const updateUser = await User.findById(req.user._id);
+      const updateKeys = Object.keys(req.body);
+
+      const testUpdate = [];
+      updateKeys.forEach((key) => {
+        if (updateUser[key] === req.body[key]) {
+          testUpdate.push({
+            [key]: true,
+          });
+        }
+      });
+
+      if (req.file) {
+        updateUser.image == req.file.path
+          ? testUpdate.push({
+            file: true,
+          })
+          : testUpdate.push({
+            file: false,
+          });
+      }
+
+      return res.status(200).json({
+        testUpdate,
+      });
+
+    } catch (error) {
+      return res.status(404).json("failed updating user")
+
+    }
   } catch (error) {
     if (catchImg) deleteImgCloudinary(catchImg);
     return next(error);
@@ -446,7 +487,7 @@ const update = async (req, res, next) => {
 //! -----------------------------------------------------------------------------
 const updateTechnologies = async (req, res, next) => {
   try {
-    const { _id } = req.user._id
+    const { _id } = req.user
 
     const oldUser = await User.findByIdAndUpdate(_id, req.body);
     if (oldUser) {
@@ -456,12 +497,14 @@ const updateTechnologies = async (req, res, next) => {
         status: "Succesfully technology updated!",
       });
     } else {
-      return res.status(404).json(UserErrors.FAIL_UPDATING_TECHNOLOGY);
+      return res.status(404).json(UserErrors.FAIL_UPDATING_TECHNOLOGIES);
     }
   } catch (error) {
     return next(error);
   }
 };
+
+
 
 //! -----------------------------------------------------------------------------
 //? ----------------------------- DELETE ----------------------------------------
@@ -700,15 +743,20 @@ const verifyNewEmail = async (req, res, next) => {
     } else {
       if (confirmationCode === userExists.confirmationCode) {
         if (emailChange !== email) {
-          await userExists.updateOne({
-            check: true,
-            email: emailChange,
-            emailChange: emailChange,
-          });
-          const updateUser = await User.findOne({ email: emailChange });
-          return res.status(200).json({
-            testCheckOk: updateUser.check == true ? true : false,
-          });
+          try {
+            await userExists.updateOne({
+              check: true,
+              email: emailChange,
+              emailChange: emailChange,
+            });
+            const updateUser = await User.findOne({ email: emailChange });
+            return res.status(200).json({
+              testCheckOk: updateUser.check == true ? true : false,
+            });
+          } catch (error) {
+            return res.status(404).json("failed updating email")
+
+          }
         } else {
           return res
             .status(400)
@@ -717,15 +765,7 @@ const verifyNewEmail = async (req, res, next) => {
             );
         }
       } else {
-        await User.findByIdAndDelete(userExists._id);
-        deleteImgCloudinary(userExists.image);
-        return res.status(200).json({
-          userExists,
-          check: false,
-          delete: (await User.findById(userExists._id))
-            ? UserErrors.FAIL_DELETING_USER
-            : UserSuccess.SUCCESS_DELETING_USER,
-        });
+        return res.status(404).json("email don't match");
       }
     }
   } catch (error) {

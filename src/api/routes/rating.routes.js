@@ -10,6 +10,6 @@ const ratingRoutes = express.Router();
 
 ratingRoutes.post("/", create);
 ratingRoutes.delete("/:id", deleteRating);
-ratingRoutes.put("/:id", create);
+ratingRoutes.put("/:id", updateRating);
 
 module.exports = ratingRoutes;
