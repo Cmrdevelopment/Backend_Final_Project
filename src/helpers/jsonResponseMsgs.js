@@ -6,6 +6,9 @@ const UserSuccess = {
 const UserErrors = {
   FAIL_CREATING_USER: 'Fail creating user',
   FAIL_UPDATING_USER: 'Fail updating user',
+  FAIL_UPDATING_TECHNOLOGIES: 'Fail updating technologies',
+  FAIL_UPDATING_RATINGS_BY_ME: 'Fail updating ratings by me',
+  FAIL_UPDATING_RATINGS_BY_OTHERS: 'Fail updating ratings by others',
   FAIL_SEARCHING_USER: 'Fail searching users',
   FAIL_SEARCHING_USER_BY_ID: 'Fail searching user by Id',
   FAIL_SEARCHING_USER_BY_NAME: 'Fail searching user by Name',
@@ -14,7 +17,7 @@ const UserErrors = {
   FAIL_REGISTRERING_USER: `Fail registering user`,
   FAIL_CHANGING_USER_EMAIL: 'Fail changing user email',
   FAIL_LOGIN_PASSWORD: 'Wrong password, please try again',
-  FAIL_LOGIN_EMAIL: 'Wrong email address, please try again', 
+  FAIL_LOGIN_EMAIL: 'Wrong email address, please try again',
 };
 
 const MobileDevErrors = {

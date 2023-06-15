@@ -456,7 +456,53 @@ const updateTechnologies = async (req, res, next) => {
         status: "Succesfully technology updated!",
       });
     } else {
-      return res.status(404).json(UserErrors.FAIL_UPDATING_TECHNOLOGY);
+      return res.status(404).json(UserErrors.FAIL_UPDATING_TECHNOLOGIES);
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
+
+
+//! -----------------------------------------------------------------------------
+//? --------------------------- UPDATE RATINGS BY ME -------------------------------
+//! -----------------------------------------------------------------------------
+const updateRatingsByMe = async (req, res, next) => {
+  try {
+    const { _id } = req.user._id
+
+    const oldUser = await User.findByIdAndUpdate(_id, req.body);
+    if (oldUser) {
+      return res.status(200).json({
+        oldUser: oldUser,
+        newUser: await User.findById(_id),
+        status: "Succesfully updated: ratings by me",
+      });
+    } else {
+      return res.status(404).json(UserErrors.FAIL_UPDATING_RATINGS_BY_ME);
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
+
+
+//! -----------------------------------------------------------------------------
+//? --------------------------- UPDATE RATINGS BY OTHERS -------------------------------
+//! -----------------------------------------------------------------------------
+const updateRatingsByOthers = async (req, res, next) => {
+  try {
+    const { _id } = req.user._id
+
+    const oldUser = await User.findByIdAndUpdate(_id, req.body);
+    if (oldUser) {
+      return res.status(200).json({
+        oldUser: oldUser,
+        newUser: await User.findById(_id),
+        status: "Succesfully updated: ratings by others",
+      });
+    } else {
+      return res.status(404).json(UserErrors.FAIL_UPDATING_RATINGS_BY_OTHERS);
     }
   } catch (error) {
     return next(error);
@@ -816,6 +862,8 @@ module.exports = {
   changePassword,
   update,
   updateTechnologies,
+  updateRatingsByMe,
+  updateRatingsByOthers,
   deleteUser,
   getAll,
   getById,
