@@ -145,8 +145,15 @@ const updateRating = async (req, res, next) => {
   }
 };
 
-module.exports = {
+//! -----------------------------------------------------------------------
+//? -------------------------------GET_BY_REFERENCE ---------------------------------
+//! -----------------------------------------------------------------------
+
+const getByReference = 
+
+
+(module.exports = {
   create,
   deleteRating,
   updateRating,
-};
+});
