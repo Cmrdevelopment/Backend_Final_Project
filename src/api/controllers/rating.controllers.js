@@ -17,19 +17,31 @@ const create = async (req, res, next) => {
       referenceUser: req.body.referenceUser,
       referenceOffer: req.body.referenceOffer,
     };
-
     const newRating = new Ratings(ratingBody);
-    const savedRating = await newRating.save();
+    try {
+      const savedRating = await newRating.save();
+      if (savedRating) {
+        await User.findByIdAndUpdate(req.body.users);
+        if (req.body.referenceOffer) {
+        }
+        if (req.body.referenceUser) {
+        }
+        await Ratings.findById(savedRating._id);
 
-    if (savedRating) {
-      return res.status(200).json(savedRating);
-    } else {
-      return res.status(404).json("Error creating rating");
+        return res.status(200).json(savedRating);
+      } else {
+        return res.status(404).json("Error creating rating");
+      }
+    } catch (error) {
+      return res.status(404).json("error saving rating");
     }
   } catch (error) {
     return next(error);
   }
 };
+//! -----------------------------------------------------------------------
+//? -------------------------------GET ALL ---------------------------------
+//! -----------------------------------------------------------------------
 
 //! -----------------------------------------------------------------------
 //? -------------------------------DELETE RATING ---------------------------------
@@ -83,7 +95,6 @@ const updateRating = async (req, res, next) => {
       referenceUser,
       referenceOffer,
     };
-
     const { id } = req.params;
     const ratingById = await Ratings.findById(id);
     if (ratingById) {
@@ -98,8 +109,6 @@ const updateRating = async (req, res, next) => {
     return next(error);
   }
 };
-
-module.exports = updateRating;
 
 module.exports = {
   create,

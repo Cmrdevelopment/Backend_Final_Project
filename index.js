@@ -29,6 +29,9 @@ app.use(express.urlencoded({ limit: "5mb", extended: false }));
 //! -----ROUTES-----------
 const UserRoutes = require("./src/api/routes/user.routes");
 const ReviewRoutes = require("./src/api/routes/experience.routes");
+const ratingRoutes = require("./src/api/routes/rating.routes")
+
+app.use("/api/v1/rating", ratingRoutes)
 app.use("/api/v1/users", UserRoutes);
 app.use("/api/v1/users", ReviewRoutes);
 
