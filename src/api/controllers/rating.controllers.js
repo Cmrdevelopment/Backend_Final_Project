@@ -149,11 +149,34 @@ const updateRating = async (req, res, next) => {
 //? -------------------------------GET_BY_REFERENCE ---------------------------------
 //! -----------------------------------------------------------------------
 
-const getByReference = 
+const getByReference = async (req, res, next) => {
+  try {
+    const { refType, id } = req.params;
 
+    let ratings;
+    if (refType === "Offer") {
+      ratings = await Ratings.find({ referenceOffer: id }).populate("Offer");
+    } else if (refType === "User") {
+      ratings = await Ratings.find({ referenceDeveloper: id }).populate("User");
+    } else {
+      return res.status(400).json({
+        error: "Invalid reference type. It must be either 'User' or 'Offer'.",
+      });
+    }
+    if (!ratings || ratings.length === 0) {
+      return res
+        .status(404)
+        .json({ error: "No ratings found for the specified reference." });
+    }
+    return res.status(200).json(ratings);
+  } catch (error) {
+    return next(error);
+  }
+};
 
-(module.exports = {
+module.exports = {
   create,
   deleteRating,
   updateRating,
-});
+  getByReference,
+};
