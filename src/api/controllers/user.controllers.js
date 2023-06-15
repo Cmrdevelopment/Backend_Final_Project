@@ -9,7 +9,7 @@ const { getTestEmailSend } = require("../../state/state.data");
 const nodemailer = require("nodemailer");
 const { generateToken } = require("../../utils/token");
 const randomPassword = require("../../utils/randomPassword");
-const { UserErrors, UserSuccess } = require("../../helpers/jsonResponseMsgs");
+const { UserErrors, UserSuccess } = require("../../helpers/jsonResponseMsgs"); //AAAAA
 const { setError } = require("../../helpers/handle-error");
 
 const Ratings = require("../models/ratings.model")
