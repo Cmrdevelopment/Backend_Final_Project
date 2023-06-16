@@ -1,48 +1,45 @@
-const mongoose = require('mongoose');
-
+const mongoose = require("mongoose");
 
 const CommentSchema = new mongoose.Schema(
   {
-
     //Usuario: Populado
     users: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: 'User',
+      ref: "User",
       required: true,
     },
 
     //Contenido del comentario.
     commentContent: {
       type: String,
-      required: true
-    },
-
-    //Reference. a quien se refiere ? Yo lo entiendo como 'destinatario', pendiente de revisar con el equipo.
-    references: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: 'User',
       required: true,
     },
 
+    //Reference. a quien se refiere ? Yo lo entiendo como 'destinatario', pendiente de revisar con el equipo.
+    referenceUser: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
 
-    //Like: Usuarios que le han dado like. 
+    referenceOfferComment: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Offer",
+      required: false,
+    },
+
+    //Like: Usuarios que le han dado like.
     likes: {
       type: [String],
-      required: true
+      required: true,
     },
 
     //Type: Privado o público
     commentType: {
       type: String,
-      enum: [
-        'Privado',
-        'Publico'
-      ],
+      enum: ["Privado", "Publico"],
       required: false,
     },
-
-
-
   },
 
   {
@@ -51,5 +48,5 @@ const CommentSchema = new mongoose.Schema(
 );
 
 // we create the data schema model for mongoose
-const Comment = mongoose.model('Comment', CommentSchema);
+const Comment = mongoose.model("Comment", CommentSchema);
 module.exports = Comment;
