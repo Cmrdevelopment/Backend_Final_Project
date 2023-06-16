@@ -50,45 +50,35 @@ const UserSchema = new mongoose.Schema(
       required: true,
     },
 
-    technologies: [
-      {
-        type: String,
-      },
-    ],
+    technologies: {
+      type: String,
+    },
 
-    offersCreated: [
-      {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "Offer",
-        required: false,
-      },
-    ],
+    offersCreated: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Offer",
+      required: false,
+    },
 
-    offersInterested: [
-      {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "Offer",
-        required: false,
-      },
-    ],
+    offersInterested: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Offer",
+      required: false,
+    },
 
     // Comentarios hechos por me
-    commentsByMe: [
-      {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "Comment",
-        required: false,
-      },
-    ],
+    commentsByMe: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Comment",
+      required: false,
+    },
 
     // Comentarios hechos por otros (a mi)
-    commentsByOthers: [
-      {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "Comment",
-        required: false,
-      },
-    ],
+    commentsByOthers: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Comment",
+      required: false,
+    },
 
     // Valoraciones hechas por me
     ratingsByMe: {
@@ -104,12 +94,6 @@ const UserSchema = new mongoose.Schema(
       required: false,
     },
 
-    referenceDeveloper: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "User",
-      required: false,
-    },
-
     experience: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Experience",
@@ -122,30 +106,24 @@ const UserSchema = new mongoose.Schema(
     },
 
     // users a los que yo sigo
-    following: [
-      {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "User",
-        required: false,
-      },
-    ],
+    following: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      required: false,
+    },
 
     // user que me siguen
-    followers: [
-      {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "User",
-        required: false,
-      },
-    ],
+    followers: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "User",
+      required: false,
+    },
 
-    like: [
-      {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "Comment",
-        required: true,
-      },
-    ],
+    like: {
+      type: [mongoose.Schema.Types.ObjectId],
+      ref: "Comment",
+      required: true,
+    },
   },
   {
     timestamps: true, // timestamp
