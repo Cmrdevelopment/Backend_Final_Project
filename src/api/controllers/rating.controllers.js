@@ -15,7 +15,7 @@ const create = async (req, res, next) => {
       //user es el propietario
       score: req.body.score,
       users: req.user._id,
-      referenceUser: req.body.referenceUser,
+      referenceDeveloper: req.body.referenceDeveloper,
       referenceOffer: req.body.referenceOffer,
     };
     const newRating = new Ratings(ratingBody);
@@ -34,18 +34,19 @@ const create = async (req, res, next) => {
                 $push: { ratings: newRating._id },
               });
               return res.status(200).json(savedRating);
-            }
-            try {
-              if (req.body.referenceUser) {
-                await User.findByIdAndUpdate(req.body.referenceUser, {
-                  $push: { ratingsByOthers: newRating._id },
-                });
-                return res.status(200).json(savedRating);
+            } else {
+              try {
+                if (req.body.referenceDeveloper) {
+                  await User.findByIdAndUpdate(req.body.referenceDeveloper, {
+                    $push: { ratingsByOthers: newRating._id },
+                  });
+                  return res.status(200).json(savedRating);
+                }
+              } catch (error) {
+                return res
+                  .status(404)
+                  .json("error updating user reviews with him");
               }
-            } catch (error) {
-              return res
-                .status(404)
-                .json("error updating user reviews with him");
             }
           } catch (error) {
             return res.status(404).json("error updating referenceOffer model");
@@ -69,9 +70,7 @@ const create = async (req, res, next) => {
 
 const getAll = async (req, res, next) => {
   try {
-    const allRatings = await Ratings.find().populate(
-      "users referenceDeveloper referenceOffer"
-    );
+    const allRatings = await Ratings.find();
     if (allRatings.length > 0) {
       return res.status(200).json(allRatings);
     } else {
@@ -168,24 +167,29 @@ const updateRating = async (req, res, next) => {
 const getByReference = async (req, res, next) => {
   try {
     const { refType, id } = req.params;
-    //RefType pide si la valoración viene de oferta u usuario y id es el id de la valoración
+    // refType indica si la valoración viene de una oferta (Offer) o un usuario (User), y id es el ID de la valoración
+    console.log(id);
     let ratings;
-    // declaro una variable vacia para
     if (refType === "Offer") {
-      ratings = await Ratings.find({ referenceOffer: id }).populate("Offer");
+      ratings = await Ratings.find({ referenceOffer: id }).populate(
+        "users referenceOffer"
+      );
+      return res.status(200).json(ratings);
     } else if (refType === "User") {
-      ratings = await Ratings.find({ referenceDeveloper: id }).populate("User");
+      console.log("entro");
+      ratings = await Ratings.find();
+      return res.status(200).json(ratings);
     } else {
-      return res.status(400).json({
+      return res.status(404).json({
         error: "Invalid reference type. It must be either 'User' or 'Offer'.",
       });
     }
-    if (!ratings || ratings.length === 0) {
+
+    if (ratings.length === 0) {
       return res
         .status(404)
         .json({ error: "No ratings found for the specified reference." });
     }
-    return res.status(200).json(ratings);
   } catch (error) {
     return next(error);
   }

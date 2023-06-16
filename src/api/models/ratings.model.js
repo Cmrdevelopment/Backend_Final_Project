@@ -12,26 +12,23 @@ const RatingsSchema = new mongoose.Schema(
 
     // Usuario
     users: {
-      type: [mongoose.Schema.Types.ObjectId],
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
 
     // Reference: Populado (usuario, oferta) (Preguntar a pedro a que se refiere? Se refiere al textArea donde escribes el comentario, que puede ser tanto para el user como para la oferta?)
-    referenceDeveloper: [
-      {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "User",
-        required: false,
-      },
-    ],
-    referenceOffer: [
-      {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "Offer",
-        required: false,
-      },
-    ],
+    referenceDeveloper: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
+
+    referenceOffer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Offer",
+      required: false,
+    },
   },
 
   {

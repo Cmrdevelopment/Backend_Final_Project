@@ -585,19 +585,10 @@ const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const userById = await User.findById(id)
-      .populate("technologies")
-      .populate("offersCreated")
-      .populate("offersInterested")
-      .populate("commentsByMe")
-      .populate("commentsByOthers")
-      .populate("ratingsByMe")
-      .populate("ratingsByOthers")
-      .populate("referenceDeveloper")
-      .populate("experience")
-      .populate("following")
-      .populate("followers")
-      .populate("like");
+    const userById = await User.findById(id).populate(
+      "technologies offersCreated offersInterested commentsByMe commentsByOthers ratingsByMe ratingsByOthers experience following followers like"
+    );
+
     if (userById) {
       return res.status(200).json(userById);
     } else {
