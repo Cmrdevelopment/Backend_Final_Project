@@ -297,7 +297,7 @@ const changeForgottenPassword = async (req, res, next) => {
     } else {
       return res.status(404).json("User no register");
     }
-  } catch (error) {}
+  } catch (error) { }
 };
 
 const sendPassword = async (req, res, next) => {
@@ -467,11 +467,11 @@ const update = async (req, res, next) => {
       if (req.file) {
         updateUser.image == req.file.path
           ? testUpdate.push({
-              file: true,
-            })
+            file: true,
+          })
           : testUpdate.push({
-              file: false,
-            });
+            file: false,
+          });
       }
 
       return res.status(200).json({
@@ -893,6 +893,68 @@ const banned = async (req, res, next) => {
   }
 };
 
+//! -----------------------------------------------------------------------------
+//? --------------------------------- FOLLOWING ------------------------------------
+//! -----------------------------------------------------------------------------
+const following = async (req, res, next) => {
+  try {
+    // id of the user to follow by the loged user
+    const { id } = req.params;
+
+    // id of the loged user
+    const { _id } = req.user._id
+
+    const logedUser = await User.findById(_id);
+
+    if (!logedUser) {
+      return res.status(404).json({ error: "Loged user not found" });
+    }
+
+    const userToFollow = await User.findById(id);
+
+    if (!userToFollow) {
+      return res.status(404).json({ error: "User to follow by loged user not found" });
+    }
+
+    ///---------------------------------------------
+
+    const isUserInFollowingArr = logedUser.following.find(user => user._id.toString() === id)
+
+    if (isUserInFollowingArr === undefined) {
+      // User to follow is not in the array 'following', so we insert it
+      logedUser.following.push(id)
+    } else {
+      // User to follow is in the array 'following', so we delete it from the array
+      logedUser.following = logedUser.following.filter(user => user._id.toString() !== id)
+    }
+
+    await logedUser.save();
+    //-----------------------------------------------------------------
+
+    // const isUserToFollow = logedUser.following.find(userToFollow => userToFollow._id.toString() === id)
+
+    // if (isUserToFollow === undefined) {
+    //   // User to follow is not in the array 'following', so we insert it
+    //   logedUser.following.push(id)
+    // } else {
+    //   // User to follow is in the array 'following', so we delete it from the array
+    //   logedUser.following = logedUser.following.filter(userToFollow => userToFollow._id.toString() !== id)
+    // }
+
+    // await logedUser.save();
+
+    // -------------------------------------------------------------
+
+
+    return res.status(200).json({
+      oldUser: logedUser,
+      status: "Success",
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   register,
   registerSlow,
@@ -915,4 +977,5 @@ module.exports = {
   autoLogin,
   resendCode,
   banned,
+  following
 };

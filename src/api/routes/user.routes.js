@@ -21,6 +21,7 @@ const {
   autoLogin,
   resendCode,
   banned,
+  following,
 } = require("../controllers/user.controllers");
 
 const express = require("express");
@@ -37,6 +38,7 @@ UserRoutes.patch("/changepassword", [isAuth], changePassword);
 UserRoutes.patch("/update/update", [isAuth], upload.single("image"), update);
 UserRoutes.patch("/updateTechnology", [isAuth], updateTechnologies);
 UserRoutes.patch("/banned/:id", banned);
+UserRoutes.patch("/following/:id", [isAuth], following);
 // UserRoutes.patch('/updateRatingsByMe', [isAuth], updateRatingsByMe);
 // UserRoutes.patch('/updateRatingsByOthers', [isAuth], updateRatingsByOthers);
 UserRoutes.delete("/", [isAuth], deleteUser);
