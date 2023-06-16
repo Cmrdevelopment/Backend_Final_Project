@@ -297,7 +297,7 @@ const changeForgottenPassword = async (req, res, next) => {
     } else {
       return res.status(404).json("User no register");
     }
-  } catch (error) { }
+  } catch (error) {}
 };
 
 const sendPassword = async (req, res, next) => {
@@ -467,11 +467,11 @@ const update = async (req, res, next) => {
       if (req.file) {
         updateUser.image == req.file.path
           ? testUpdate.push({
-            file: true,
-          })
+              file: true,
+            })
           : testUpdate.push({
-            file: false,
-          });
+              file: false,
+            });
       }
 
       return res.status(200).json({
@@ -894,15 +894,15 @@ const banned = async (req, res, next) => {
 };
 
 //! -----------------------------------------------------------------------------
-//? --------------------------------- FOLLOWING ------------------------------------
+//? --------------------------------- FOLLOWING/FOLLOWERS -----------------------
 //! -----------------------------------------------------------------------------
 const following = async (req, res, next) => {
   try {
-    // id of the user to follow by the loged user
+    // ID del usuario a seguir por parte del usuario logueado.
     const { id } = req.params;
 
-    // id of the loged user
-    const { _id } = req.user._id
+    // ID del usuario logueado.
+    const { _id } = req.user._id;
 
     const logedUser = await User.findById(_id);
 
@@ -913,58 +913,54 @@ const following = async (req, res, next) => {
     const userToFollow = await User.findById(id);
 
     if (!userToFollow) {
-      return res.status(404).json({ error: "User to follow by loged user not found" });
+      return res
+        .status(404)
+        .json({ error: "User to follow by loged user not found" });
     }
 
     ///---------------------------------------------
 
-    const isUserInFollowingArr = logedUser.following.find(user => user._id.toString() === id)
+    const isUserInFollowingArr = logedUser.following.find(
+      (user) => user._id.toString() === id
+    );
 
     if (isUserInFollowingArr === undefined) {
-      // User to follow is not in the array 'following', so we insert it
-      logedUser.following.push(id)
+      // El usuario a seguir no está en el array 'following', por lo tanto lo insertamos en el array.
+      logedUser.following.push(id);
     } else {
-      // User to follow is in the array 'following', so we delete it from the array
-      logedUser.following = logedUser.following.filter(user => user._id.toString() !== id)
+      // El usuario a seguir está en el array 'following', por lo tanto lo eliminamos del array.
+      logedUser.following = logedUser.following.filter(
+        (user) => user._id.toString() !== id
+      );
     }
 
     await logedUser.save();
 
     //-----------------------------------------------------------------
 
-    const isUserInFollowersArr = userToFollow.followers.find(user => user._id.toString() === _id)
-
-    console.log("isUserInFollowersArr: ", isUserInFollowersArr)
+    const isUserInFollowersArr = userToFollow.followers.find(
+      (user) => user._id.toString() === _id.toString()
+    );
 
     if (isUserInFollowersArr === undefined) {
-      console.log("user NOT in followers array ANTES")
-
-      // User to follow is not in the array 'followers', so we insert it
-      userToFollow.followers.push(_id)
-
-      console.log("user NOT in followers array DESPUES")
+      // El usuario a seguir no está en el array 'followers', por lo tanto lo insertamos.
+      userToFollow.followers.push(_id.toString());
     } else {
+      console.log("user in followers array");
 
-      console.log("user in followers array")
-
-      // User to follow is in the array 'followers', so we delete it from the array
-      userToFollow.followers = userToFollow.followers.filter(user => user._id.toString() !== _id)
+      // El usuario a seguir está en el array 'followers', por lo tanto lo eliminamos del array.
+      userToFollow.followers = userToFollow.followers.filter(
+        (user) => user._id.toString() !== _id.toString()
+      );
     }
 
     await userToFollow.save();
 
     // -------------------------------------------------------------
 
-
     return res.status(200).json({
       status: "Success updating following -- Followers",
     });
-
-    // return res.status(200).json({
-    //   oldUser: logedUser,
-    //   status: "Success",
-    // });
-
   } catch (error) {
     return next(error);
   }
@@ -992,5 +988,5 @@ module.exports = {
   autoLogin,
   resendCode,
   banned,
-  following
+  following,
 };
