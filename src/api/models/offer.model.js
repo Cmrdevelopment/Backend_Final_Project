@@ -7,7 +7,7 @@ const OfferSchema = new mongoose.Schema(
     offerType: {
       type: String,
       enum: [
-        'LookForJob',
+        'LookingForJob',
         'OfferMySelf'
       ],
       required: true,
@@ -19,11 +19,6 @@ const OfferSchema = new mongoose.Schema(
       required: false,
     },
 
-    referenceOffer: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "Offer",
-      required: false,
-    },
 
     description: {
       type: String,
@@ -48,7 +43,14 @@ const OfferSchema = new mongoose.Schema(
     },
 
     // Tecnologías que piden en la oferta
-    technologies: { type: String, required: true },
+    //technologies: { type: String, required: true },
+
+    technologies: [
+      {
+        type: String,
+      },
+    ],
+
 
     // Años de experiencia
     //Comentario: Revisar si puede usarse el max: 100.

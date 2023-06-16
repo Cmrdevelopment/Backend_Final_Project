@@ -30,8 +30,10 @@ app.use(express.urlencoded({ limit: "15mb", extended: false }));
 const UserRoutes = require("./src/api/routes/user.routes");
 const ExperienceRoutes = require("./src/api/routes/experience.routes");
 const ratingRoutes = require("./src/api/routes/rating.routes");
+const offerRoutes = require("./src/api/routes/offer.routes");
 
 app.use("/api/v1/rating", ratingRoutes);
+app.use("/api/v1/offers", offerRoutes);
 app.use("/api/v1/users", UserRoutes);
 app.use("/api/v1/experience", ExperienceRoutes);
 

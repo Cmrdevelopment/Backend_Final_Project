@@ -20,6 +20,11 @@ const UserErrors = {
   FAIL_LOGIN_EMAIL: 'Wrong email address, please try again',
 };
 
+const OfferErrors = {
+  FAIL_UPDATING_OFFER: 'Fail updating offer',
+  FAIL_SEARCHING_OFFER: 'Fail searching offer',
+}
+
 const MobileDevErrors = {
   FAIL_CREATING_MOBILEDEV: 'Fail creating mobile dev',
   FAIL_UPDATING_MOBILEDEV: 'Fail updating mobile dev',
@@ -51,6 +56,7 @@ const AppSuccess = {
 
 module.exports.UserSuccess = UserSuccess;
 module.exports.UserErrors = UserErrors;
+module.exports.OfferErrors = OfferErrors;
 module.exports.MobileDevErrors = MobileDevErrors;
 module.exports.MobileDevSuccess = MobileDevSuccess;
 module.exports.AppErrors = AppErrors;
