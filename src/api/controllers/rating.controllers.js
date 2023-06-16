@@ -4,6 +4,7 @@ const Ratings = require("../models/ratings.model");
 const PORT = process.env.PORT;
 const BASE_URL = process.env.BASE_URL;
 const BASE_URL_COMPLETE = `${BASE_URL}${PORT}`;
+const { ObjectId } = require("mongodb");
 
 //! -----------------------------------------------------------------------
 //? -------------------------------CREATE RATING ---------------------------------
@@ -177,7 +178,7 @@ const getByReference = async (req, res, next) => {
       return res.status(200).json(ratings);
     } else if (refType === "User") {
       console.log("entro");
-      ratings = await Ratings.find();
+      ratings = await Ratings.find({ referenceDeveloper: id });
       return res.status(200).json(ratings);
     } else {
       return res.status(404).json({
