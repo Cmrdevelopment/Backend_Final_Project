@@ -26,6 +26,20 @@ const OfferErrors = {
   FAIL_SEARCHING_OFFER_BY_ID: 'Fail searching offer by ID'
 }
 
+const CommentErrors = {
+  FAIL_UPDATING_COMMENT: 'Error while updating the user comment',
+  FAIL_CREATING_COMMENT: 'There was an error while creating this comment, please try again',
+  ERROR_SAVING_COMMENT: 'There was an error while saving the comment. Please, try again.',
+  FAIL_SEARCHING_COMMENTS: 'Error while searching all the comments',
+  FAIL_SEARCHING_COMMENT_BY_ID: 'Error while searching this comment by ID',
+  FAIL_UPDATING_COMMENT: 'Error while updating this comment',
+  FAIL_DELETING_COMMENT: 'Error while trying to delete this comment',
+  
+}
+const CommentSuccess = {
+  SUCCESS_DELETING_COMMENT: 'Comment succesfully deleted from the database!',
+}
+
 const MobileDevErrors = {
   FAIL_CREATING_MOBILEDEV: 'Fail creating mobile dev',
   FAIL_UPDATING_MOBILEDEV: 'Fail updating mobile dev',
@@ -62,3 +76,5 @@ module.exports.MobileDevErrors = MobileDevErrors;
 module.exports.MobileDevSuccess = MobileDevSuccess;
 module.exports.AppErrors = AppErrors;
 module.exports.AppSuccess = AppSuccess;
+module.exports.CommentErrors = CommentErrors;
+module.exports.CommentSuccess = CommentSuccess;

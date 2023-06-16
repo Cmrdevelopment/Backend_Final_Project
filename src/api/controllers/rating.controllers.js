@@ -185,12 +185,6 @@ const getByReference = async (req, res, next) => {
         error: "Invalid reference type. It must be either 'User' or 'Offer'.",
       });
     }
-
-    if (ratings.length === 0) {
-      return res
-        .status(404)
-        .json({ error: "No ratings found for the specified reference." });
-    }
   } catch (error) {
     return next(error);
   }
