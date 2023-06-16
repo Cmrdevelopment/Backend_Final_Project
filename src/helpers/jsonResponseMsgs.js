@@ -22,7 +22,8 @@ const UserErrors = {
 
 const OfferErrors = {
   FAIL_UPDATING_OFFER: 'Fail updating offer',
-  FAIL_SEARCHING_OFFER: 'Fail searching offer',
+  FAIL_SEARCHING_OFFER: 'Fail searching offers',
+  FAIL_SEARCHING_OFFER_BY_ID: 'Fail searching offer by ID'
 }
 
 const MobileDevErrors = {

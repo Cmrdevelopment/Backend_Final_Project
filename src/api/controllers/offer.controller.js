@@ -50,6 +50,52 @@ const createOffer = async (req, res, next) => {
 //? ------------------------------GET ALL OFFERS --------------------------
 //! ---------------------------------------------------------------------
 
+// Añadir oferta al usiario logueado, si está interesado en la oferta
+// Add offer to user, if he/she is interested in this offer
+// When the user clickes the button "Like offer/follow offer" (or something like this)
+const addInterestedOfferToUser = async (req, res, next) => {
+
+  try {
+    const offerBody = {
+      offerName: req.body.offerName,
+      offerType: req.body.offerType,
+      annualSalary: req.body.annualSalary,
+      description: req.body.description,
+      city: req.body.city,
+      jobType: req.body.jobType,
+      technologies: req.body.technologies,
+    };
+
+    const newOffer = new Offer(offerBody);
+
+    try {
+      // aqui guardamos en la base de datos
+      const savedOffer = await newOffer.save();
+      if (savedOffer) {
+        // ahora lo que tenemos que guardar el id en el array de offer de quien lo creo
+        try {
+          await User.findByIdAndUpdate(req.user._id, {
+            $push: { offersInterested: newOffer._id },
+          });
+          return res.status(200).json(savedOffer);
+        } catch (error) {
+          return res.status(404).json("error updating user offer");
+        }
+      } else {
+        return res.status(404).json("Error creating offer");
+      }
+    } catch (error) {
+      return res.status(404).json("error saving offer");
+    }
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+};
+
+//! ---------------------------------------------------------------------
+//? ------------------------------GET ALL OFFERS --------------------------
+//! ---------------------------------------------------------------------
+
 const getAll = async (req, res, next) => {
   try {
     const Offers = await Offer.find()
@@ -83,7 +129,7 @@ const getById = async (req, res, next) => {
     if (offerById) {
       return res.status(200).json(offerById);
     } else {
-      return res.status(404).json(AppErrors.FAIL_SEARCHING_APP_BY_ID);
+      return res.status(404).json(OfferErrors.FAIL_SEARCHING_OFFER_BY_ID);
     }
   } catch (error) {
     return next(error);
@@ -141,6 +187,7 @@ const updateOffer = async (req, res, next) => {
     };
 
     const { id } = req.params;
+
     const offerById = await Offer.findById(id);
     if (offerById) {
       console.log('updateOffer -> filterBody: ', filterBody)
@@ -192,7 +239,7 @@ const deleteOffer = async (req, res, next) => {
                 deletedObject: deletedOffer,
                 test: (await Offer.findById(id))
                   ? "fail deleting offer"
-                  : "success deleting rating",
+                  : "success deleting offer",
               });
 
             } catch (error) {
@@ -209,7 +256,7 @@ const deleteOffer = async (req, res, next) => {
         }
       }
     } else {
-      return res.status(404).json({ message: "Fail deleting rating" });
+      return res.status(404).json({ message: "Fail deleting offer" });
     }
   } catch (error) {
     return next(error);
@@ -218,6 +265,7 @@ const deleteOffer = async (req, res, next) => {
 
 module.exports = {
   createOffer,
+  addInterestedOfferToUser,
   getAll,
   getById,
   getByOfferName,

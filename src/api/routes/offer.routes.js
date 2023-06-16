@@ -2,6 +2,7 @@ const { isAuth } = require('../../middleware/auth.middleware');
 const { upload } = require('../../middleware/files.middleware');
 const {
     createOffer,
+    addInterestedOfferToUser,
     updateOffer,
     getAll,
     getById,
@@ -17,6 +18,7 @@ OfferRoutes.get('/:id', getById);
 //OfferRoutes.put("/:id", updateOffer);
 OfferRoutes.patch('/updateOffer/:id', [isAuth], upload.single('image'), updateOffer);
 OfferRoutes.post('/createOffer', [isAuth], upload.single('image'), createOffer);
+OfferRoutes.post('/addInterestedOfferToUser', [isAuth], upload.single('image'), addInterestedOfferToUser);
 OfferRoutes.delete('/:id', deleteOffer);
 
 module.exports = OfferRoutes;
