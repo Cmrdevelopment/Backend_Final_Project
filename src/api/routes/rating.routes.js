@@ -4,14 +4,16 @@ const {
   deleteRating,
   updateRating,
   getByReference,
+  getAll,
 } = require("../controllers/rating.controllers");
 
 const express = require("express");
 const ratingRoutes = express.Router();
 
-ratingRoutes.post("/", create);
-ratingRoutes.delete("/:id", deleteRating);
-ratingRoutes.put("/:id", updateRating);
-ratingRoutes.get("/:refType/:id", getByReference);
+ratingRoutes.get("/", getAll);
+ratingRoutes.post("/", [isAuth], create);
+ratingRoutes.delete("/:id", [isAuth], deleteRating);
+ratingRoutes.put("/:id", [isAuth], updateRating);
+ratingRoutes.get("/:refType/:id", [isAuth], getByReference);
 
 module.exports = ratingRoutes;

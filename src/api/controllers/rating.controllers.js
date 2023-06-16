@@ -12,8 +12,9 @@ const BASE_URL_COMPLETE = `${BASE_URL}${PORT}`;
 const create = async (req, res, next) => {
   try {
     const ratingBody = {
+      //user es el propietario
       score: req.body.score,
-      users: req.body.users,
+      users: req.user._id,
       referenceUser: req.body.referenceUser,
       referenceOffer: req.body.referenceOffer,
     };
@@ -24,7 +25,7 @@ const create = async (req, res, next) => {
       if (savedRating) {
         // ahora lo que tenemos que guardar el id en el array de rating de quien lo creo
         try {
-          await User.findByIdAndUpdate(req.body.users, {
+          await User.findByIdAndUpdate(req.user._id, {
             $push: { ratingsByMe: newRating._id },
           });
           try {
@@ -65,6 +66,21 @@ const create = async (req, res, next) => {
 //! -----------------------------------------------------------------------
 //? -------------------------------GET ALL ---------------------------------
 //! -----------------------------------------------------------------------
+
+const getAll = async (req, res, next) => {
+  try {
+    const allRatings = await Ratings.find().populate(
+      "users referenceDeveloper referenceOffer"
+    );
+    if (allRatings.length > 0) {
+      return res.status(200).json(allRatings);
+    } else {
+      return res.status(404).json("No ratings found");
+    }
+  } catch (error) {
+    return next(error);
+  }
+};
 
 //! -----------------------------------------------------------------------
 //? -------------------------------DELETE RATING ---------------------------------
@@ -152,8 +168,9 @@ const updateRating = async (req, res, next) => {
 const getByReference = async (req, res, next) => {
   try {
     const { refType, id } = req.params;
-
+    //RefType pide si la valoración viene de oferta u usuario y id es el id de la valoración
     let ratings;
+    // declaro una variable vacia para
     if (refType === "Offer") {
       ratings = await Ratings.find({ referenceOffer: id }).populate("Offer");
     } else if (refType === "User") {
@@ -176,6 +193,7 @@ const getByReference = async (req, res, next) => {
 
 module.exports = {
   create,
+  getAll,
   deleteRating,
   updateRating,
   getByReference,
