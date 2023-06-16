@@ -12,10 +12,10 @@ const randomPassword = require("../../utils/randomPassword");
 const { UserErrors, UserSuccess } = require("../../helpers/jsonResponseMsgs"); //AAAAA
 const { setError } = require("../../helpers/handle-error");
 
-const Ratings = require("../models/ratings.model")
-const Offer = require("../models/offer.model")
-const Experience = require("../models/experience.model")
-const Comment = require("../models/comment.model")
+const Ratings = require("../models/ratings.model");
+const Offer = require("../models/offer.model");
+const Experience = require("../models/experience.model");
+const Comment = require("../models/comment.model");
 
 const PORT = process.env.PORT;
 const BASE_URL = process.env.BASE_URL;
@@ -61,7 +61,7 @@ const register = async (req, res, next) => {
           }, 1100);
         }
       } catch (error) {
-        return res.status(404).json("failed saving user")
+        return res.status(404).json("failed saving user");
       }
     } else {
       if (req.file) deleteImgCloudinary(catchImg);
@@ -121,14 +121,14 @@ const registerSlow = async (req, res, next) => {
 
           transporter.sendMail(mailOptions, function (error) {
             if (error) {
-              console.log('send mail error, error: ', error)
+              console.log("send mail error, error: ", error);
 
               return res.status(404).json({
                 user: userSave,
                 confirmationCode: "Error, resend code",
               });
             } else {
-              console.log('send mail ok,: ')
+              console.log("send mail ok,: ");
 
               return res.status(200).json({
                 user: userSave,
@@ -138,8 +138,7 @@ const registerSlow = async (req, res, next) => {
           });
         }
       } catch (error) {
-        return res.status(404).json("failed saving user")
-
+        return res.status(404).json("failed saving user");
       }
     } else {
       if (req.file) deleteImgCloudinary(catchImg);
@@ -156,7 +155,7 @@ const registerSlow = async (req, res, next) => {
 const registerWithRedirect = async (req, res, next) => {
   let catchImg = req.file?.path;
 
-  console.log('registerWithRedirect -> req.body: ', req.body)
+  console.log("registerWithRedirect -> req.body: ", req.body);
 
   try {
     let confirmationCode = randomCode();
@@ -182,8 +181,7 @@ const registerWithRedirect = async (req, res, next) => {
           );
         }
       } catch (error) {
-        return res.status(404).json("failed saving user")
-
+        return res.status(404).json("failed saving user");
       }
     } else {
       if (req.file) deleteImgCloudinary(catchImg);
@@ -299,7 +297,7 @@ const changeForgottenPassword = async (req, res, next) => {
     } else {
       return res.status(404).json("User no register");
     }
-  } catch (error) { }
+  } catch (error) {}
 };
 
 const sendPassword = async (req, res, next) => {
@@ -392,10 +390,8 @@ const changePassword = async (req, res, next) => {
             updateUser: false,
           });
         }
-
       } catch (error) {
-        return res.status(404).json("failed updating password")
-
+        return res.status(404).json("failed updating password");
       }
     } else {
       return res.status(404).json(UserErrors.FAIL_MATCHING_PASSWORDS);
@@ -410,12 +406,16 @@ const changePassword = async (req, res, next) => {
 //! -----------------------------------------------------------------------------
 const update = async (req, res, next) => {
   let catchImg = req.file?.path;
-  const { name, surname, description, city, image } = req.body
-  // hacer un update especial para las tecnologias y un controlador para seguir a la gente 
+  const { name, surname, description, city, image } = req.body;
+  // hacer un update especial para las tecnologias y un controlador para seguir a la gente
 
   try {
     const filterBody = {
-      name, surname, description, city, image
+      name,
+      surname,
+      description,
+      city,
+      image,
     };
     const patchUser = new User(filterBody);
 
@@ -467,20 +467,18 @@ const update = async (req, res, next) => {
       if (req.file) {
         updateUser.image == req.file.path
           ? testUpdate.push({
-            file: true,
-          })
+              file: true,
+            })
           : testUpdate.push({
-            file: false,
-          });
+              file: false,
+            });
       }
 
       return res.status(200).json({
         testUpdate,
       });
-
     } catch (error) {
-      return res.status(404).json("failed updating user")
-
+      return res.status(404).json("failed updating user");
     }
   } catch (error) {
     if (catchImg) deleteImgCloudinary(catchImg);
@@ -493,7 +491,7 @@ const update = async (req, res, next) => {
 //! -----------------------------------------------------------------------------
 const updateTechnologies = async (req, res, next) => {
   try {
-    const { _id } = req.user
+    const { _id } = req.user;
 
     const oldUser = await User.findByIdAndUpdate(_id, req.body);
     if (oldUser) {
@@ -509,8 +507,6 @@ const updateTechnologies = async (req, res, next) => {
     return next(error);
   }
 };
-
-
 
 //! -----------------------------------------------------------------------------
 //? ----------------------------- DELETE ----------------------------------------
@@ -589,7 +585,19 @@ const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const userById = await User.findById(id).populate("ratingsByOthers");
+    const userById = await User.findById(id)
+      .populate("technologies")
+      .populate("offersCreated")
+      .populate("offersInterested")
+      .populate("commentsByMe")
+      .populate("commentsByOthers")
+      .populate("ratingsByMe")
+      .populate("ratingsByOthers")
+      .populate("referenceDeveloper")
+      .populate("experience")
+      .populate("following")
+      .populate("followers")
+      .populate("like");
     if (userById) {
       return res.status(200).json(userById);
     } else {
@@ -688,6 +696,7 @@ const checkNewUser = async (req, res, next) => {
 //! ------------------------------------------------------------------------
 
 const changeEmail = async (req, res, next) => {
+  console.log("changeEmail:", req.user._id);
   try {
     await User.syncIndexes();
     let confirmationCode = randomCode();
@@ -758,7 +767,9 @@ const sendNewCode = async (req, res, next) => {
 const verifyNewEmail = async (req, res, next) => {
   try {
     const { email, confirmationCode, emailChange } = req.body;
+
     const userExists = await User.findOne({ email });
+
     if (!userExists) {
       return res.status(404).json(UserErrors.FAIL_SEARCHING_USER);
     } else {
@@ -775,8 +786,7 @@ const verifyNewEmail = async (req, res, next) => {
               testCheckOk: updateUser.check == true ? true : false,
             });
           } catch (error) {
-            return res.status(404).json("failed updating email")
-
+            return res.status(404).json("failed updating email");
           }
         } else {
           return res
@@ -866,6 +876,32 @@ const resendCode = async (req, res, next) => {
   }
 };
 
+//! -----------------------------------------------------------------------------
+//? --------------------------------- BANNED ------------------------------------
+//! -----------------------------------------------------------------------------
+const banned = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const oldUser = await User.findById(id);
+    if (!oldUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    if (oldUser.banned === true) {
+      oldUser.banned = false;
+    } else {
+      oldUser.banned = true;
+    }
+    const updatedUser = await oldUser.save();
+    return res.status(200).json({
+      oldUser: oldUser,
+      updatedUser: updatedUser,
+      status: "Successfully banned",
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 module.exports = {
   register,
   registerSlow,
@@ -887,4 +923,5 @@ module.exports = {
   verifyNewEmail,
   autoLogin,
   resendCode,
+  banned,
 };
