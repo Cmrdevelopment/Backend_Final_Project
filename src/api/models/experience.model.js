@@ -1,8 +1,14 @@
 const mongoose = require('mongoose');
+const User = require('./user.model');
 
 
 const ExperienceSchema = new mongoose.Schema(
   {
+    ownerUser: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    }],
     // Empresa donde se trabajó
     workedWith: {
       type: String,

@@ -11,6 +11,7 @@ const createExperience = async (req, res) => {
     try {
    
     const experienceBody = {
+      ownerUser: req.user._id,
       workedWith: req.body.workedWith,
       duration: req.body.duration,
       technologies: req.body.technologies,
@@ -48,29 +49,93 @@ const createExperience = async (req, res) => {
 //? ---------------------------- GetAll -----------------------------------------
 //! -----------------------------------------------------------------------------
 
-
+const getAllExperiences = async (req, res, next) => {
+    try {
+      
+      const allExperiences = await Experience.find();
+      if (allExperiences) {
+        return res.status(200).json(allExperiences);
+      } else {
+        return res.status(404).json("No experiences found");
+      }
+    } catch (error) {
+      return next(error);
+    }
+  }; 
 
 //! -----------------------------------------------------------------------------
 //? ---------------------------- GetById -----------------------------------------
 //! -----------------------------------------------------------------------------
 
+const getByIdExperience = async (req, res, next) => {
 
+    try {
+        const { id } = req.params;
+        const experienceById = await Experience.findById(id);
+    
+        if (experienceById) {
+          return res.status(200).json(experienceById);
+        } else {
+          return res.status(404).json("Not found experience by Id");
+        }
+      } catch (error) {
+        return next(error);
+      }
+
+}
 
 //! -----------------------------------------------------------------------------
 //? ---------------------------- GetByUser -----------------------------------------
 //! -----------------------------------------------------------------------------
 
+const getByUserExperience = async (req, res, next) => {
 
+    try {
+        // id del usuario
+        const { id } = req.params;
+        const experienceByUser = await Experience.find({ownerUser: id})
+        if (experienceByUser) {
+          return res.status(200).json(experienceByUser);
+        } else {
+          return res.status(404).json("User experience not found");
+        }
+      } catch (error) {
+        return next(error);
+      }
+
+}
 
 //! -----------------------------------------------------------------------------
 //? ---------------------------- UPDATE -----------------------------------------
 //! -----------------------------------------------------------------------------
 
 
+
 //! -----------------------------------------------------------------------------
 //? ---------------------------- DELETE -----------------------------------------
 //! -----------------------------------------------------------------------------
 
+const deleteExperience = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      
+      // Eliminar la experiencia por su ID
+      const deletedExperience = await Experience.findByIdAndDelete(id);
+  
+      if (!deletedExperience) {
+        return res.status(404).json("Experience not found");
+      }
+  
+      // Eliminar la referencia de la experiencia en el usuario
+      const userId = req.user._id;
+      await User.findByIdAndUpdate(userId, {
+        $pull: { experience: id },
+      });
+  
+      return res.status(200).json("Experience deleted");
+    } catch (error) {
+      return next(error);
+    }
+  };
 
-
-module.exports = { createExperience };
+module.exports = { createExperience, getAllExperiences, getByIdExperience, getByUserExperience, deleteExperience };
