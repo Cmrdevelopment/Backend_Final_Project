@@ -50,9 +50,11 @@ const UserSchema = new mongoose.Schema(
       required: true,
     },
 
-    technologies: {
-      type: String,
-    },
+    technologies: [
+      {
+        type: String,
+      },
+    ],
 
     offersCreated: {
       type: [mongoose.Schema.Types.ObjectId],

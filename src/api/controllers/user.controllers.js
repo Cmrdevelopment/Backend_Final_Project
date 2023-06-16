@@ -929,27 +929,42 @@ const following = async (req, res, next) => {
     }
 
     await logedUser.save();
+
     //-----------------------------------------------------------------
 
-    // const isUserToFollow = logedUser.following.find(userToFollow => userToFollow._id.toString() === id)
+    const isUserInFollowersArr = userToFollow.followers.find(user => user._id.toString() === _id)
 
-    // if (isUserToFollow === undefined) {
-    //   // User to follow is not in the array 'following', so we insert it
-    //   logedUser.following.push(id)
-    // } else {
-    //   // User to follow is in the array 'following', so we delete it from the array
-    //   logedUser.following = logedUser.following.filter(userToFollow => userToFollow._id.toString() !== id)
-    // }
+    console.log("isUserInFollowersArr: ", isUserInFollowersArr)
 
-    // await logedUser.save();
+    if (isUserInFollowersArr === undefined) {
+      console.log("user NOT in followers array ANTES")
+
+      // User to follow is not in the array 'followers', so we insert it
+      userToFollow.followers.push(_id)
+
+      console.log("user NOT in followers array DESPUES")
+    } else {
+
+      console.log("user in followers array")
+
+      // User to follow is in the array 'followers', so we delete it from the array
+      userToFollow.followers = userToFollow.followers.filter(user => user._id.toString() !== _id)
+    }
+
+    await userToFollow.save();
 
     // -------------------------------------------------------------
 
 
     return res.status(200).json({
-      oldUser: logedUser,
-      status: "Success",
+      status: "Success updating following -- Followers",
     });
+
+    // return res.status(200).json({
+    //   oldUser: logedUser,
+    //   status: "Success",
+    // });
+
   } catch (error) {
     return next(error);
   }
