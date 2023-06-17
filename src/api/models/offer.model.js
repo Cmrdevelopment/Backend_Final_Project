@@ -1,24 +1,22 @@
-const mongoose = require('mongoose');
-
+const mongoose = require("mongoose");
 
 const OfferSchema = new mongoose.Schema(
   {
     // Tipo de la oferta
     offerType: {
       type: String,
-      enum: [
-        'LookingForJob',
-        'OfferMySelf'
-      ],
+      enum: ["LookingForJob", "OfferMySelf"],
       required: true,
     },
-
+    offerTitle: {
+      type: String,
+      required: true,
+    },
     // Salario anual
     annualSalary: {
       type: Number,
       required: false,
     },
-
 
     description: {
       type: String,
@@ -34,11 +32,7 @@ const OfferSchema = new mongoose.Schema(
     // Tipo de trabajo
     jobType: {
       type: String,
-      enum: [
-        'Remote',
-        'Office',
-        'Hybrid'
-      ],
+      enum: ["Remote", "Office", "Hybrid"],
       required: true,
     },
 
@@ -51,11 +45,12 @@ const OfferSchema = new mongoose.Schema(
       },
     ],
 
-
     // Años de experiencia
     //Comentario: Revisar si puede usarse el max: 100.
     experienceYears: {
-      type: Number, min: 0, max: 100,
+      type: Number,
+      min: 0,
+      max: 100,
     },
 
     // Logo de la compañia
@@ -64,43 +59,36 @@ const OfferSchema = new mongoose.Schema(
     },
 
     // Usuarios que siguen la oferta
-    users: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: 'User',
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
       required: true,
     },
 
-    // Comentarios sobre la oferta
     comments: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: 'Comment',
+      ref: "Comment",
       required: false,
     },
 
-    // Valoraciones sobre la oferta
     ratings: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: 'Ratings',
-      required: true,
+      ref: "Ratings",
+      required: false,
     },
 
-    // Usuarios ineresados en la oferta
     interestedUsers: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: 'User',
-      required: true,
+      ref: "User",
+      required: false,
     },
 
     // Estado de la Oferta
     offerState: {
       type: String,
-      enum: [
-        'Close',
-        'Suspended',
-        'Open'
-      ],
+      enum: ["Close", "Suspended", "Open"],
+      required: true,
     },
-
   },
 
   {
@@ -109,5 +97,5 @@ const OfferSchema = new mongoose.Schema(
 );
 
 // we create the data schema model for mongoose
-const Offer = mongoose.model('Offer', OfferSchema);
+const Offer = mongoose.model("Offer", OfferSchema);
 module.exports = Offer;

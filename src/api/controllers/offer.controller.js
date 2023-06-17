@@ -1,23 +1,25 @@
-const User = require('../models/user.model');
-const Ratings = require('../models/ratings.model');
-const Comment = require('../models/comment.model');
-const Offer = require('../models/offer.model');
-const { OfferErrors } = require('../../helpers/jsonResponseMsgs');
+const User = require("../models/user.model");
+const Ratings = require("../models/ratings.model");
+const Comment = require("../models/comment.model");
+const Offer = require("../models/offer.model");
+const { OfferErrors } = require("../../helpers/jsonResponseMsgs");
 
 //! -----------------------------------------------------------------------
 //? -------------------------------CREATE OFFER ---------------------------------
 //! -----------------------------------------------------------------------
 const createOffer = async (req, res, next) => {
   try {
-
+    const arrayTechnology = req.body.technologies.split(",");
     const offerBody = {
-      offerName: req.body.offerName,
+      offerTitle: req.body.offerTitle,
       offerType: req.body.offerType,
       annualSalary: req.body.annualSalary,
       description: req.body.description,
       city: req.body.city,
       jobType: req.body.jobType,
-      technologies: req.body.technologies,
+      technologies: arrayTechnology,
+      offerState: req.body.offerState,
+      owner: req.user._id,
     };
 
     const newOffer = new Offer(offerBody);
@@ -54,7 +56,6 @@ const createOffer = async (req, res, next) => {
 // Add offer to user, if he/she is interested in this offer
 // When the user clickes the button "Like offer/follow offer" (or something like this)
 const addInterestedOfferToUser = async (req, res, next) => {
-
   try {
     const offerBody = {
       offerName: req.body.offerName,
@@ -99,10 +100,10 @@ const addInterestedOfferToUser = async (req, res, next) => {
 const getAll = async (req, res, next) => {
   try {
     const Offers = await Offer.find()
-      .populate('users')
-      .populate('comments')
-      .populate('ratings')
-      .populate('interestedUsers');
+      .populate("users")
+      .populate("comments")
+      .populate("ratings")
+      .populate("interestedUsers");
 
     if (Offers) {
       return res.status(200).json(Offers);
@@ -114,7 +115,6 @@ const getAll = async (req, res, next) => {
   }
 };
 
-
 //! ---------------------------------------------------------------------
 //? ------------------------------GETBYID -------------------------------
 //! ---------------------------------------------------------------------
@@ -122,10 +122,10 @@ const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const offerById = await Offer.findById(id)
-      .populate('users')
-      .populate('comments')
-      .populate('ratings')
-      .populate('interestedUsers');
+      .populate("users")
+      .populate("comments")
+      .populate("ratings")
+      .populate("interestedUsers");
     if (offerById) {
       return res.status(200).json(offerById);
     } else {
@@ -161,12 +161,8 @@ const getByOfferName = async (req, res, next) => {
 //! ---------------------------------------------------------------------
 //Revisar filterbody. Pregunta a quien revise esto: ¿Se puede meter por filterbody un valor cuyo required sea 'true'? ¿O dará problemas? En caso de problemas, revisar esto.
 const updateOffer = async (req, res, next) => {
-
-  console.log('updateOffer -> req.body: ', req.body)
-  console.log("file", req.file)
-
   try {
-    let newImage
+    let newImage;
 
     if (req.file) {
       newImage = req.file.path;
@@ -190,7 +186,7 @@ const updateOffer = async (req, res, next) => {
 
     const offerById = await Offer.findById(id);
     if (offerById) {
-      console.log('updateOffer -> filterBody: ', filterBody)
+      console.log("updateOffer -> filterBody: ", filterBody);
       const patchOffer = new Offer(filterBody);
       patchOffer._id = id;
       await Offer.findByIdAndUpdate(id, patchOffer); // Guardar los cambios en la base de datos
@@ -232,7 +228,7 @@ const deleteOffer = async (req, res, next) => {
 
             try {
               // lo que queremos es borrar todos los comentarios de esta oferta priva
-              await Comment.deleteMany({ offerPrivates: id })
+              await Comment.deleteMany({ offerPrivates: id });
 
               /// por ultimo lanzamos un test en el runtime para ver si se ha borrado la review correctamente
               return res.status(200).json({
@@ -241,16 +237,16 @@ const deleteOffer = async (req, res, next) => {
                   ? "fail deleting offer"
                   : "success deleting offer",
               });
-
             } catch (error) {
-              return res.status(404).json("failed updating user offersInterested");
-
+              return res
+                .status(404)
+                .json("failed updating user offersInterested");
             }
           } catch (error) {
-            return res.status(404).json("failed updating user offersInterested");
-
+            return res
+              .status(404)
+              .json("failed updating user offersInterested");
           }
-
         } catch (error) {
           return res.status(404).json("failed updating user offersCreated");
         }
