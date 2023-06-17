@@ -567,7 +567,9 @@ const deleteUser = async (req, res, next) => {
 //! ---------------------------------------------------------------------
 const getAll = async (req, res, next) => {
   try {
-    const allUsers = await User.find().populate("ratingsByOthers");
+    const allUsers = await User.find().populate(
+      "technologies offersCreated offersInterested commentsByMe commentsByOthers ratingsByMe ratingsByOthers experience following followers like"
+    );
     if (allUsers) {
       return res.status(200).json(allUsers);
     } else {
@@ -588,7 +590,6 @@ const getById = async (req, res, next) => {
     const userById = await User.findById(id).populate(
       "technologies offersCreated offersInterested commentsByMe commentsByOthers ratingsByMe ratingsByOthers experience following followers like"
     );
-
     if (userById) {
       return res.status(200).json(userById);
     } else {
@@ -600,18 +601,13 @@ const getById = async (req, res, next) => {
 };
 
 //! ---------------------------------------------------------------------
-//? ------------------------------GET BY TOKEN -------------------------------
+//? ------------------------------GET BY TOKEN --------------------------
 //! ---------------------------------------------------------------------
 const getByToken = async (req, res, next) => {
   try {
-    //const { id } = req.params;
-
-    //console.log("getByToken -> req.user: ", req.user);
-
-    //const userById = await User.findById(id).populate('mobileDevs');
-    const userByToken = await User.findById(req.user._id)
-      .populate("mobileDevs")
-      .populate(`apps`);
+    const userByToken = await User.findById(req.user._id).populate(
+      "technologies offersCreated offersInterested commentsByMe commentsByOthers ratingsByMe ratingsByOthers experience following followers like"
+    );
     if (userByToken) {
       return res.status(200).json(userByToken);
     } else {
@@ -621,21 +617,6 @@ const getByToken = async (req, res, next) => {
     return next(error);
   }
 };
-
-// const getFavoriteStatus = async (req, res, next) => {
-//   try {
-//     const mobileFav = await MobileDev.findById(req.params.id);
-//     const user = await User.findById(req.user._id);
-
-//     if (mobileFav.users.includes(user._id)) {
-//       res.status(200).json({ isFavorite: true });
-//     } else {
-//       res.status(200).json({ isFavorite: false });
-//     }
-//   } catch (error) {
-//     return next('Error while getting favorite status', error);
-//   }
-// };
 
 //! ------------------------------------------------------------------------
 //? -------------------------- CHECK NEW USER------------------------------
@@ -758,9 +739,9 @@ const sendNewCode = async (req, res, next) => {
 const verifyNewEmail = async (req, res, next) => {
   try {
     const { email, confirmationCode, emailChange } = req.body;
-
+    console.log("verifyNewEmail: => ", req.body);
     const userExists = await User.findOne({ email });
-
+    console.log("userExists: => ", userExists);
     if (!userExists) {
       return res.status(404).json(UserErrors.FAIL_SEARCHING_USER);
     } else {
@@ -870,10 +851,11 @@ const resendCode = async (req, res, next) => {
 //! -----------------------------------------------------------------------------
 //? --------------------------------- BANNED ------------------------------------
 //! -----------------------------------------------------------------------------
+
 const banned = async (req, res, next) => {
   try {
-    const { id } = req.params;
-    const oldUser = await User.findById(id);
+    const { _id } = req.user;
+    const oldUser = await User.findOne(_id, req.body);
     if (!oldUser) {
       return res.status(404).json({ error: "User not found" });
     }
