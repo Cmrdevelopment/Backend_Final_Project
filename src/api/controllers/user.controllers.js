@@ -297,7 +297,7 @@ const changeForgottenPassword = async (req, res, next) => {
     } else {
       return res.status(404).json("User no register");
     }
-  } catch (error) { }
+  } catch (error) {}
 };
 
 const sendPassword = async (req, res, next) => {
@@ -467,11 +467,11 @@ const update = async (req, res, next) => {
       if (req.file) {
         updateUser.image == req.file.path
           ? testUpdate.push({
-            file: true,
-          })
+              file: true,
+            })
           : testUpdate.push({
-            file: false,
-          });
+              file: false,
+            });
       }
 
       return res.status(200).json({
@@ -948,6 +948,44 @@ const following = async (req, res, next) => {
   }
 };
 
+//! -----------------------------------------------------------------------------
+//? --------------------------------- UPDATE CHANGE ROL -------------------------
+//! -----------------------------------------------------------------------------
+
+const updateUserRol = async (req, res, next) => {
+  try {
+    const { id, rol } = req.body;
+
+    if (!["admin", "freelance", "company"].includes(rol)) {
+      return res.status(400).json({ error: "Invalid role" });
+    }
+
+    // Obtener el usuario a actualizar
+
+    const user = await User.findByIdAndUpdate(id);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Verificar si el usuario tiene el rol de administrador
+
+    if (req.user.rol !== "admin") {
+      return res
+        .status(403)
+        .json({ error: "Only admins can update user roles" });
+    }
+
+    // Actulización y guadado del nuevo rol en el usuario
+
+    user.rol = rol;
+    await user.save();
+
+    return res.status(200).json({ message: "User role updated successfully" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   register,
   registerSlow,
@@ -971,4 +1009,5 @@ module.exports = {
   resendCode,
   banned,
   following,
+  updateUserRol,
 };
