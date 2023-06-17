@@ -58,13 +58,14 @@ const createOffer = async (req, res, next) => {
 const addInterestedOfferToUser = async (req, res, next) => {
   try {
     const offerBody = {
-      offerName: req.body.offerName,
+      offerTitle: req.body.offerTitle,
       offerType: req.body.offerType,
       annualSalary: req.body.annualSalary,
       description: req.body.description,
       city: req.body.city,
       jobType: req.body.jobType,
       technologies: req.body.technologies,
+      offerState: req.body.offerState,
     };
 
     const newOffer = new Offer(offerBody);

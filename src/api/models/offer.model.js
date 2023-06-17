@@ -4,7 +4,7 @@ const OfferSchema = new mongoose.Schema(
   {
     // Usuarios que siguen la oferta
     owner: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: [mongoose.Schema.Types.ObjectId],
       ref: "User",
       required: true,
     },
