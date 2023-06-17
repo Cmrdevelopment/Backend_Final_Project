@@ -2,6 +2,13 @@ const mongoose = require("mongoose");
 
 const OfferSchema = new mongoose.Schema(
   {
+    // Usuarios que siguen la oferta
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+
     // Tipo de la oferta
     offerType: {
       type: String,
@@ -56,13 +63,6 @@ const OfferSchema = new mongoose.Schema(
     // Logo de la compañia
     image: {
       type: String,
-    },
-
-    // Usuarios que siguen la oferta
-    owner: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
     },
 
     comments: {
