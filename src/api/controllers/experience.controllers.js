@@ -111,25 +111,32 @@ const getByUserExperience = async (req, res, next) => {
 
 const deleteExperience = async (req, res, next) => {
     try {
-      const { id } = req.params;
-      
-      // Eliminar la experiencia por su ID
-      const deletedExperience = await Experience.findByIdAndDelete(id);
+          const { id } = req.params;
+          const experienceToDelete = await Experience.findById(id);
   
-      if (!deletedExperience) {
+      if (!experienceToDelete) {
         return res.status(404).json("Experience not found");
-      }
-  
-      // Eliminar la referencia de la experiencia en el usuario
-      const userId = req.user._id;
-      await User.findByIdAndUpdate(userId, {
-        $pull: { experience: id },
-      });
-  
-      return res.status(200).json("Experience deleted");
-    } catch (error) {
-      return next(error);
+      } else {
+
+          const idUser = experienceToDelete.user
+
+        await User.findByIdAndUpdate(idUser, {
+          $pull: { experience: id},
+        })
+
+        await Experience.findByIdAndDelete(id);
+
+        if(await Experience.findById(id)){
+          return res.status(404).json("La experience no se ha borrado");
+        } else {
+          return res.status(200).json("Experience delete");
+        }
+      } 
+      }catch (error) {
+        return next(error);
     }
   };
+  
+ 
 
 module.exports = { createExperience, getAllExperiences, getByIdExperience, getByUserExperience, deleteExperience };
