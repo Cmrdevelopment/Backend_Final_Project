@@ -33,7 +33,7 @@ const ratingRoutes = require("./src/api/routes/rating.routes");
 const offerRoutes = require("./src/api/routes/offer.routes");
 const CommentRoutes = require("./src/api/routes/comment.routes");
 
-app.use("api/v1/comment", CommentRoutes);
+app.use("/api/v1/comment", CommentRoutes);
 app.use("/api/v1/rating", ratingRoutes);
 app.use("/api/v1/offers", offerRoutes);
 app.use("/api/v1/users", UserRoutes);

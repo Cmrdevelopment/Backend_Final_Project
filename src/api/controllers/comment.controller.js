@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 const Comment = require("../models/comment.model");
+const Offer = require("../models/offer.model");
 const {
   CommentErrors,
   CommentSuccess,
@@ -8,52 +9,68 @@ const {
 //! -----------------------------------------------------------------------
 //? -------------------------------CREATE COMMENT ---------------------------------
 //! -----------------------------------------------------------------------
-//Nota de Jonathan: Con tal de no modificar el codigo para este controlador Create, cuyo autor original es Igor, añadiré los mensajes de error en forma de comentarios junto a sus respectivas lineas.
+
 const createComment = async (req, res, next) => {
   try {
-    const filterBody = {
+    const commentBody = {
       commentContent: req.body.commentContent,
-      commentType: req.body.commentType,
       users: req.user._id,
-      referenceOfferComment: req.body.referenceOfferComment,
+      commentType: req.body.commentType,
       referenceUser: req.body.referenceUser,
+      referenceOfferComment: req.body.referenceOfferComment,
     };
-
-    const newComment = new Comment(filterBody);
-
+    const newComment = new Comment(commentBody);
     try {
-      // aqui guardamos en la base de datos
       const savedComment = await newComment.save();
+      console.log("entro", savedComment);
       if (savedComment) {
-        // ahora lo que tenemos que guardar el id en el array de offer de quien lo creo
         try {
           await User.findByIdAndUpdate(req.user._id, {
-            $push: { offersCreated: newOffer._id },
+            $push: { commentsByMe: newComment._id },
           });
-          return res.status(200).json(savedComment);
+          try {
+            if (req.body.referenceOfferComment) {
+              await Offer.findByIdAndUpdate(req.body.referenceOfferComment, {
+                $push: { comments: newComment._id },
+              });
+              return res.status(200).json(savedComment);
+            } else {
+              try {
+                if (req.body.referenceUser) {
+                  await User.findByIdAndUpdate(req.body.referenceUser, {
+                    $push: { commentsByOthers: newComment._id },
+                  });
+                  return res.status(200).json(savedComment);
+                }
+              } catch (error) {
+                return res
+                  .status(404)
+                  .json("error updating user reviews with him");
+              }
+            }
+          } catch (error) {
+            return res.status(404).json("error updating referenceOffer model");
+          }
         } catch (error) {
-          return res.status(404).json("error updating user comment"); //CommentErrors.FAIL_UPDATING_COMMENT
+          return res.status(404).json("error updating owner user comment ");
         }
       } else {
-        return res.status(404).json("Error creating comment"); //CommentErrors.FAIL_CREATING_COMMENT
+        return res.status(404).json("Error creating comment");
       }
     } catch (error) {
-      return res.status(404).json("error saving comment"); //CommentErrors.ERROR_SAVING_COMMENT
+      return res.status(404).json("error saving comment");
     }
   } catch (error) {
     return res.status(500).json(error.message);
   }
 };
-
 //! ---------------------------------------------------------------------
 //? ------------------------------GET ALL -------------------------------
 //! ---------------------------------------------------------------------
 
 const getAll = async (req, res, next) => {
   try {
-    const allComments = await Comment.find()
-      .populate("users")
-      .populate("references");
+    const allComments = await Comment.find();
     if (allComments) {
       return res.status(200).json(allComments);
     } else {
@@ -133,24 +150,18 @@ const getAll = async (req, res, next) => {
 const deleteComment = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const deleteComment = await Comment.findByIdAndDelete(id);
-    if (deleteComment) {
-      if (await Comment.findById(id)) {
-        next(CommentErrors.FAIL_DELETING_COMMENT);
-      } else {
-        //Solo lo borramos del commentsByMe, en User.
-        await User.updateMany(
-          { commentsByMe: id },
-          {
-            $pull: { commentsByMe: id },
-          }
-        );
-      }
+    const deletedComment = await Comment.findByIdAndDelete(id);
+    if (deletedComment) {
+      //Solo lo borramos del commentsByMe, en User.
+      await User.updateMany(
+        { commentsByMe: id },
+        {
+          $pull: { commentsByMe: id },
+        }
+      );
       return res.status(200).json({
-        deleteObject: deleteComment,
-        test: (await App.findById(id))
-          ? CommentErrors.FAIL_DELETING_COMMENT
-          : CommentSuccess.SUCCESS_DELETING_COMMENT,
+        deletedObject: deletedComment,
+        message: CommentSuccess.SUCCESS_DELETING_COMMENT,
       });
     } else {
       return res.status(404).json(CommentErrors.FAIL_DELETING_COMMENT);
@@ -165,20 +176,30 @@ const deleteComment = async (req, res, next) => {
 //! ---------------------------------------------------------------------
 const toggleFavorite = async (req, res, next) => {
   try {
-    const commentFav = await Comment.findById(req.params.id); //--->Comment
-    const user = await User.findById(req.user._id); //--->Nuestro user
+    const commentId = req.params.id;
+    const userId = req.user._id;
 
-    if (!commentFav.users.includes(user._id)) {
-      await commentFav.updateOne({ $push: { users: user._id } });
-      await user.updateOne({ $push: { like: commentFav._id } });
-      res.status(200).json(CommentSuccess.SUCCESS_AT_LIKES);
+    const commentFav = await Comment.findById(commentId);
+    const user = await User.findById(userId);
+
+    if (!commentFav || !user) {
+      return res.status(404).json("User or comment not found");
+    }
+
+    if (!commentFav.users.includes(userId)) {
+      await Comment.findByIdAndUpdate(commentId, { $push: { users: userId } });
+      await User.findByIdAndUpdate(userId, { $push: { like: commentFav._id } });
+      return res.status(200).json("Comment added to liked comments");
     } else {
-      await commentFav.updateOne({ $pull: { users: user._id } });
-      await user.updateOne({ $pull: { like: commentFav._id } });
-      res.status(200).json("Comment removed from liked comments!");
+      await Comment.findByIdAndUpdate(commentId, { $pull: { users: userId } });
+      await User.findByIdAndUpdate(userId, { $pull: { like: commentFav._id } });
+      return res.status(200).json("Comment removed from liked comments");
     }
   } catch (error) {
-    return next("Error while adding app to favourites", error);
+    return next(
+      "Error while adding/removing comment to/from favourites",
+      error
+    );
   }
 };
 
