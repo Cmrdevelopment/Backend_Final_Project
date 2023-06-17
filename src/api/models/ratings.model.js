@@ -11,7 +11,7 @@ const RatingsSchema = new mongoose.Schema(
     },
 
     // Usuario que crea el rating
-    users: {
+    owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,

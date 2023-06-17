@@ -1,14 +1,13 @@
-const mongoose = require('mongoose');
-const User = require('./user.model');
-
+const mongoose = require("mongoose");
+const User = require("./user.model");
 
 const ExperienceSchema = new mongoose.Schema(
   {
-    ownerUser: [{
+    owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-    }],
+    },
     // Empresa donde se trabajó
     workedWith: {
       type: String,
@@ -20,12 +19,14 @@ const ExperienceSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    
+
     //Tecnologías con las que se trabajó en la experiencia laboral
-    technologies: [{ 
-      type: String,
-      required: true
-    }],
+    technologies: [
+      {
+        type: String,
+        required: true,
+      },
+    ],
 
     // Descripcion
     description: {
@@ -37,7 +38,6 @@ const ExperienceSchema = new mongoose.Schema(
     image: {
       type: String,
     },
-
   },
 
   {
@@ -46,5 +46,5 @@ const ExperienceSchema = new mongoose.Schema(
 );
 
 // we create the data schema model for mongoose
-const Experience = mongoose.model('Experience', ExperienceSchema);
+const Experience = mongoose.model("Experience", ExperienceSchema);
 module.exports = Experience;

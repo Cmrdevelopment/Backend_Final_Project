@@ -15,7 +15,7 @@ const create = async (req, res, next) => {
     const ratingBody = {
       //user es el propietario
       score: req.body.score,
-      users: req.user._id,
+      owner: req.user._id,
       referenceDeveloper: req.body.referenceDeveloper,
       referenceOffer: req.body.referenceOffer,
     };
@@ -173,7 +173,7 @@ const getByReference = async (req, res, next) => {
     let ratings;
     if (refType === "Offer") {
       ratings = await Ratings.find({ referenceOffer: id }).populate(
-        "users referenceOffer"
+        "owner referenceOffer"
       );
       return res.status(200).json(ratings);
     } else if (refType === "User") {
