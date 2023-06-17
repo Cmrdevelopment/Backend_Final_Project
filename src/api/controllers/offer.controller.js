@@ -100,7 +100,7 @@ const addInterestedOfferToUser = async (req, res, next) => {
 const getAll = async (req, res, next) => {
   try {
     const Offers = await Offer.find()
-      .populate("users")
+      .populate("owner")
       .populate("comments")
       .populate("ratings")
       .populate("interestedUsers");
@@ -122,7 +122,7 @@ const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const offerById = await Offer.findById(id)
-      .populate("users")
+      .populate("owner")
       .populate("comments")
       .populate("ratings")
       .populate("interestedUsers");
