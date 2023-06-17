@@ -12,7 +12,7 @@ const express = require("express");
 const CommentRoutes = express.Router();
 
 CommentRoutes.post("/", [isAuth], createComment);
-CommentRoutes.get("/", [isAuth], getAll);
+CommentRoutes.get("/", getAll);
 CommentRoutes.delete("/:id", [isAuth], deleteComment);
 CommentRoutes.get("/:refType/:id", [isAuth], getByReference);
 CommentRoutes.put("/favorite/:id", [isAuth], toggleFavorite);
