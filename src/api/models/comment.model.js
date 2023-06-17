@@ -4,7 +4,7 @@ const CommentSchema = new mongoose.Schema(
   {
     //Usuario: Populado
     //QUien ha creado el comentario
-    users: {
+    owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
