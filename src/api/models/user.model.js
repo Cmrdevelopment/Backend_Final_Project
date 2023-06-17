@@ -121,7 +121,7 @@ const UserSchema = new mongoose.Schema(
       required: false,
     },
 
-    like: {
+    comentsThatILike: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Comment",
       required: true,

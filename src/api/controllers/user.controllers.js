@@ -297,7 +297,7 @@ const changeForgottenPassword = async (req, res, next) => {
     } else {
       return res.status(404).json("User no register");
     }
-  } catch (error) {}
+  } catch (error) { }
 };
 
 const sendPassword = async (req, res, next) => {
@@ -443,7 +443,7 @@ const update = async (req, res, next) => {
     patchUser.banned = req.user.banned;
     patchUser.following = req.user.following;
     patchUser.followers = req.user.followers;
-    patchUser.like = req.user.like;
+    patchUser.comentsThatILike = req.user.comentsThatILike;
 
     try {
       await User.findByIdAndUpdate(req.user._id, patchUser);
@@ -467,11 +467,11 @@ const update = async (req, res, next) => {
       if (req.file) {
         updateUser.image == req.file.path
           ? testUpdate.push({
-              file: true,
-            })
+            file: true,
+          })
           : testUpdate.push({
-              file: false,
-            });
+            file: false,
+          });
       }
 
       return res.status(200).json({
@@ -568,7 +568,7 @@ const deleteUser = async (req, res, next) => {
 const getAll = async (req, res, next) => {
   try {
     const allUsers = await User.find().populate(
-      "technologies offersCreated offersInterested commentsByMe commentsByOthers ratingsByMe ratingsByOthers experience following followers like"
+      "technologies offersCreated offersInterested commentsByMe commentsByOthers ratingsByMe ratingsByOthers experience following followers comentsThatILike"
     );
     if (allUsers) {
       return res.status(200).json(allUsers);
@@ -588,7 +588,7 @@ const getById = async (req, res, next) => {
     const { id } = req.params;
 
     const userById = await User.findById(id).populate(
-      "technologies offersCreated offersInterested commentsByMe commentsByOthers ratingsByMe ratingsByOthers experience following followers like"
+      "technologies offersCreated offersInterested commentsByMe commentsByOthers ratingsByMe ratingsByOthers experience following followers comentsThatILike"
     );
     if (userById) {
       return res.status(200).json(userById);
@@ -606,7 +606,7 @@ const getById = async (req, res, next) => {
 const getByToken = async (req, res, next) => {
   try {
     const userByToken = await User.findById(req.user._id).populate(
-      "technologies offersCreated offersInterested commentsByMe commentsByOthers ratingsByMe ratingsByOthers experience following followers like"
+      "technologies offersCreated offersInterested commentsByMe commentsByOthers ratingsByMe ratingsByOthers experience following followers comentsThatILike"
     );
     if (userByToken) {
       return res.status(200).json(userByToken);
