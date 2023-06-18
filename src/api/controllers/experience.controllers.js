@@ -108,7 +108,7 @@ const deleteExperience = async (req, res, next) => {
     if (!experienceToDelete) {
       return res.status(404).json("Experience not found");
     } else {
-      const idUser = experienceToDelete.user;
+      const idUser = experienceToDelete.owner;
 
       await User.findByIdAndUpdate(idUser, {
         $pull: { experience: id },
@@ -117,9 +117,9 @@ const deleteExperience = async (req, res, next) => {
       await Experience.findByIdAndDelete(id);
 
       if (await Experience.findById(id)) {
-        return res.status(404).json("La experience no se ha borrado");
+        return res.status(404).json("The experience has not been deleted");
       } else {
-        return res.status(200).json("Experience delete");
+        return res.status(200).json("Experience deleted");
       }
     }
   } catch (error) {
