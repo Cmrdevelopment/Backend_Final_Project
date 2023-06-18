@@ -48,10 +48,6 @@ const createOffer = async (req, res, next) => {
   }
 };
 
-//! ---------------------------------------------------------------------
-//? ------------------------------GET ALL OFFERS --------------------------
-//! ---------------------------------------------------------------------
-
 // Añadir oferta al usiario logueado, si está interesado en la oferta
 // Add offer to user, if he/she is interested in this offer
 // When the user clickes the button "Like offer/follow offer" (or something like this)
@@ -88,6 +84,36 @@ const addInterestedOfferToUser = async (req, res, next) => {
       }
     } catch (error) {
       return res.status(404).json("error saving offer");
+    }
+  } catch (error) {
+    return res.status(500).json(error.message);
+  }
+};
+
+//! ---------------------------------------------------------------------
+//? ------------ Toggle Interested Offer To User ------------------------
+//! ---------------------------------------------------------------------
+const toggleInterestedOfferToUser = async (req, res, next) => {
+  try {
+    const offerId = req.params.id;
+    const userId = req.user._id;
+
+    const offer = await Offer.findById(offerId);
+    const user = await User.findById(userId);
+
+    if (!offer || !user) {
+      return res.status(404).json("User or offer not found");
+    }
+
+    const offerInUserOffersInterestedArray = await User.findOne({ offersInterested: offerId });
+    if (!offerInUserOffersInterestedArray) {
+      await User.findByIdAndUpdate(userId, { $push: { offersInterested: offerId } });
+      await Offer.findByIdAndUpdate(offerId, { $push: { interestedUsers: userId } });
+      return res.status(200).json("Offer added to user's offersInterested array");
+    } else {
+      await User.findByIdAndUpdate(userId, { $pull: { offersInterested: offerId } });
+      await Offer.findByIdAndUpdate(offerId, { $pull: { interestedUsers: userId } });
+      return res.status(200).json("Offer removed from user's offersInterested array");
     }
   } catch (error) {
     return res.status(500).json(error.message);
@@ -263,6 +289,7 @@ const deleteOffer = async (req, res, next) => {
 module.exports = {
   createOffer,
   addInterestedOfferToUser,
+  toggleInterestedOfferToUser,
   getAll,
   getById,
   getByOfferName,
