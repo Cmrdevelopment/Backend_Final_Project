@@ -176,7 +176,7 @@ const getByOfferName = async (req, res, next) => {
     if (OfferNameByName) {
       return res.status(200).json(OfferNameByName);
     } else {
-      return res.status(404).json(AppErrors.FAIL_SEARCHING_APP_BY_NAME);
+      return res.status(404).json(OfferErrors.FAIL_SEARCHING_OFFER_BY_NAME);
     }
   } catch (error) {
     return next(error);

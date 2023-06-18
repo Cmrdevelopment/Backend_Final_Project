@@ -23,7 +23,8 @@ const UserErrors = {
 const OfferErrors = {
   FAIL_UPDATING_OFFER: 'Fail updating offer',
   FAIL_SEARCHING_OFFER: 'Fail searching offers',
-  FAIL_SEARCHING_OFFER_BY_ID: 'Fail searching offer by ID'
+  FAIL_SEARCHING_OFFER_BY_ID: 'Fail searching offer by ID',
+  FAIL_SEARCHING_OFFER_BY_NAME: 'Fail searching offer by name'
 }
 
 const CommentErrors = {
@@ -34,7 +35,7 @@ const CommentErrors = {
   FAIL_SEARCHING_COMMENT_BY_ID: 'Error while searching this comment by ID',
   FAIL_UPDATING_COMMENT: 'Error while updating this comment',
   FAIL_DELETING_COMMENT: 'Error while trying to delete this comment',
-  
+
 }
 const CommentSuccess = {
   SUCCESS_DELETING_COMMENT: 'Comment succesfully deleted from the database!',
