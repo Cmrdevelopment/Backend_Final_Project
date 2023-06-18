@@ -162,9 +162,9 @@ const deleteComment = async (req, res, next) => {
 
       try {
         await User.updateMany(
-          { like: id },
+          { comentsThatILike: id },
           {
-            $pull: { like: id },
+            $pull: { comentsThatILike: id },
           }
         );
 
@@ -172,7 +172,7 @@ const deleteComment = async (req, res, next) => {
           deletedObject: deletedComment,
           message: CommentSuccess.SUCCESS_DELETING_COMMENT,
         });
-      } catch (error) {}
+      } catch (error) { }
     } else {
       return res.status(404).json(CommentErrors.FAIL_DELETING_COMMENT);
     }
@@ -198,11 +198,11 @@ const toggleFavorite = async (req, res, next) => {
 
     if (!commentFav.likes.includes(userId)) {
       await Comment.findByIdAndUpdate(commentId, { $push: { likes: userId } });
-      await User.findByIdAndUpdate(userId, { $push: { like: commentFav._id } });
+      await User.findByIdAndUpdate(userId, { $push: { comentsThatILike: commentFav._id } });
       return res.status(200).json("Comment added to liked comments");
     } else {
       await Comment.findByIdAndUpdate(commentId, { $pull: { likes: userId } });
-      await User.findByIdAndUpdate(userId, { $pull: { like: commentFav._id } });
+      await User.findByIdAndUpdate(userId, { $pull: { comentsThatILike: commentFav._id } });
       return res.status(200).json("Comment removed from liked comments");
     }
   } catch (error) {
