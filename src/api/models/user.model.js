@@ -35,7 +35,7 @@ const UserSchema = new mongoose.Schema(
       default: false,
     },
 
-    //Pendiente de revisar
+    //Pendiente de revisar New Email
     emailChange: {
       type: String,
       required: false,

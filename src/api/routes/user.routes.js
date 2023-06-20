@@ -3,7 +3,7 @@ const { upload } = require("../../middleware/files.middleware");
 const {
   registerSlow,
   sendCode,
-  registerWithRedirect,
+  //registerWithRedirect,
   login,
   changeForgottenPassword,
   sendPassword,
@@ -31,7 +31,7 @@ const UserRoutes = express.Router();
 UserRoutes.get("/", getAll);
 UserRoutes.get("/:id", getById);
 UserRoutes.get("/getUserByToken/getUserByToken", [isAuth], getByToken);
-UserRoutes.get("/register", upload.single("image"), registerWithRedirect);
+//UserRoutes.get("/register", upload.single("image"), registerWithRedirect);
 UserRoutes.post("/register", upload.single("image"), registerSlow);
 UserRoutes.patch("/forgotpassword/forgotpassword/", changeForgottenPassword);
 UserRoutes.post("/login", login);
@@ -44,7 +44,7 @@ UserRoutes.patch("/following/:id", [isAuth], following);
 // UserRoutes.patch('/updateRatingsByOthers', [isAuth], updateRatingsByOthers);
 UserRoutes.delete("/", [isAuth], deleteUser);
 UserRoutes.post("/check", checkNewUser);
-UserRoutes.post("/changeEmail/", [isAuth], changeEmail);
+UserRoutes.post("/changeEmail", [isAuth], changeEmail);
 UserRoutes.post("/verifyNewEmail", [isAuth], verifyNewEmail);
 UserRoutes.post("/login/autologin", autoLogin);
 UserRoutes.post("/resend", resendCode);

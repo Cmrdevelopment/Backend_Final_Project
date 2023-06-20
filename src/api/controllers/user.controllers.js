@@ -21,58 +21,58 @@ const PORT = process.env.PORT;
 const BASE_URL = process.env.BASE_URL;
 const BASE_URL_COMPLETE = `${BASE_URL}${PORT}`;
 
-//! -----------------------------------------------------------------------------
-//? ----------------------------REGISTER CORTO EN CODIGO ------------------------
-//! -----------------------------------------------------------------------------
-const register = async (req, res, next) => {
-  let catchImg = req.file?.path;
-  //console.log('register -> req.body: ', req.body)
-  try {
-    let confirmationCode = randomCode();
-    const { email, name } = req.body;
+// //! -----------------------------------------------------------------------------
+// //? ----------------------------REGISTER CORTO EN CODIGO ------------------------
+// //! -----------------------------------------------------------------------------
+// const register = async (req, res, next) => {
+//   let catchImg = req.file?.path;
+//   //console.log('register -> req.body: ', req.body)
+//   try {
+//     let confirmationCode = randomCode();
+//     const { email, name } = req.body;
 
-    const userExist = await User.findOne({ email }, { name });
+//     const userExist = await User.findOne({ email }, { name });
 
-    if (!userExist) {
-      const newUser = new User({ ...req.body, confirmationCode });
-      if (req.file) {
-        newUser.image = req.file.path;
-      } else {
-        newUser.image = "https://pic.onlinewebfonts.com/svg/img_181369.png";
-      }
+//     if (!userExist) {
+//       const newUser = new User({ ...req.body, confirmationCode });
+//       if (req.file) {
+//         newUser.image = req.file.path;
+//       } else {
+//         newUser.image = "https://pic.onlinewebfonts.com/svg/img_181369.png";
+//       }
 
-      try {
-        const userSave = await newUser.save();
+//       try {
+//         const userSave = await newUser.save();
 
-        if (userSave) {
-          sendConfirmationCodeByEmail(email, name, confirmationCode);
-          setTimeout(() => {
-            if (getTestEmailSend()) {
-              return res.status(200).json({
-                user: userSave,
-                confirmationCode,
-              });
-            } else {
-              return res.status(404).json({
-                user: userSave,
-                confirmationCode: "Error, resend code",
-              });
-            }
-          }, 1100);
-        }
-      } catch (error) {
-        return res.status(404).json("failed saving user");
-      }
-    } else {
-      if (req.file) deleteImgCloudinary(catchImg);
+//         if (userSave) {
+//           sendConfirmationCodeByEmail(email, name, confirmationCode);
+//           setTimeout(() => {
+//             if (getTestEmailSend()) {
+//               return res.status(200).json({
+//                 user: userSave,
+//                 confirmationCode,
+//               });
+//             } else {
+//               return res.status(404).json({
+//                 user: userSave,
+//                 confirmationCode: "Error, resend code",
+//               });
+//             }
+//           }, 1100);
+//         }
+//       } catch (error) {
+//         return res.status(404).json("failed saving user");
+//       }
+//     } else {
+//       if (req.file) deleteImgCloudinary(catchImg);
 
-      return res.status(409).json("This user already exist");
-    }
-  } catch (error) {
-    if (req.file) deleteImgCloudinary(catchImg);
-    return next(error);
-  }
-};
+//       return res.status(409).json("This user already exist");
+//     }
+//   } catch (error) {
+//     if (req.file) deleteImgCloudinary(catchImg);
+//     return next(error);
+//   }
+// };
 
 //! -----------------------------------------------------------------------------
 //? ----------------------------REGISTER LARGO EN CODIGO ------------------------
@@ -152,46 +152,46 @@ const registerSlow = async (req, res, next) => {
 //! -----------------------------------------------------------------------------
 //? ----------------------------REGISTER CON REDIRECT----------------------------
 //! -----------------------------------------------------------------------------
-const registerWithRedirect = async (req, res, next) => {
-  let catchImg = req.file?.path;
+// const registerWithRedirect = async (req, res, next) => {
+//   let catchImg = req.file?.path;
 
-  console.log("registerWithRedirect -> req.body: ", req.body);
+//   console.log("registerWithRedirect -> req.body: ", req.body);
 
-  try {
-    let confirmationCode = randomCode();
+//   try {
+//     let confirmationCode = randomCode();
 
-    const userExist = await User.findOne(
-      { email: req.body.email },
-      { name: req.body.name }
-    );
-    if (!userExist) {
-      const newUser = new User({ ...req.body, confirmationCode });
-      if (req.file) {
-        newUser.image = req.file.path;
-      } else {
-        newUser.image = "https://pic.onlinewebfonts.com/svg/img_181369.png";
-      }
+//     const userExist = await User.findOne(
+//       { email: req.body.email },
+//       { name: req.body.name }
+//     );
+//     if (!userExist) {
+//       const newUser = new User({ ...req.body, confirmationCode });
+//       if (req.file) {
+//         newUser.image = req.file.path;
+//       } else {
+//         newUser.image = "https://pic.onlinewebfonts.com/svg/img_181369.png";
+//       }
 
-      try {
-        const userSave = await newUser.save();
+//       try {
+//         const userSave = await newUser.save();
 
-        if (userSave) {
-          return res.redirect(
-            `${BASE_URL_COMPLETE}/api/v1/users/register/sendMail/${userSave._id}`
-          );
-        }
-      } catch (error) {
-        return res.status(404).json("failed saving user");
-      }
-    } else {
-      if (req.file) deleteImgCloudinary(catchImg);
-      return res.status(409).json("This user already exist");
-    }
-  } catch (error) {
-    if (req.file) deleteImgCloudinary(catchImg);
-    return next(error);
-  }
-};
+//         if (userSave) {
+//           return res.redirect(
+//             `${BASE_URL_COMPLETE}/api/v1/users/register/sendMail/${userSave._id}`
+//           );
+//         }
+//       } catch (error) {
+//         return res.status(404).json("failed saving user");
+//       }
+//     } else {
+//       if (req.file) deleteImgCloudinary(catchImg);
+//       return res.status(409).json("This user already exist");
+//     }
+//   } catch (error) {
+//     if (req.file) deleteImgCloudinary(catchImg);
+//     return next(error);
+//   }
+// };
 
 //! -----------------------------------------------------------------------------
 //? ------------------ CONTRALADORES QUE PUEDEN SER REDIRECT --------------------
@@ -668,14 +668,15 @@ const checkNewUser = async (req, res, next) => {
 //! ------------------------------------------------------------------------
 
 const changeEmail = async (req, res, next) => {
-  console.log("changeEmail:", req.user._id);
   try {
     await User.syncIndexes();
     let confirmationCode = randomCode();
-    const { email } = req.body;
-    if (req.user.email != email) {
+    const { newEmail } = req.body;
+
+    if (req.user && req.user.email != newEmail) {
+      console.log("antes", req.user.email);
       await User.findByIdAndUpdate(req.user._id, {
-        emailChange: email,
+        emailChange: newEmail,
         check: false,
         confirmationCode: confirmationCode,
       });
@@ -697,7 +698,6 @@ const sendNewCode = async (req, res, next) => {
     const userDB = await User.findById(id);
     const nodemailerEmail = process.env.NODEMAILER_EMAIL;
     const nodemailerPassword = process.env.NODEMAILER_PASSWORD;
-
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -715,6 +715,7 @@ const sendNewCode = async (req, res, next) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
+        console.log(mailOptions);
         return res.status(404).json({
           user: userDB,
           confirmationCode: UserErrors.FAIL_CHANGING_USER_EMAIL,
@@ -723,6 +724,7 @@ const sendNewCode = async (req, res, next) => {
         console.log("email sent: " + info.response);
         return res.status(200).json({
           email: UserSuccess.SUCCESS_CHANGING_USER_EMAIL,
+          user: userDB,
           confirmationCode: userDB.confirmationCode,
         });
       }
@@ -736,39 +738,83 @@ const sendNewCode = async (req, res, next) => {
 //? -------------------------- VERIFY NEW EMAIL------------------------------
 //! ------------------------------------------------------------------------
 
+// const verifyNewEmail = async (req, res, next) => {
+//   try {
+//     const { email, confirmationCode, emailChange } = req.body;
+//     console.log("verifyNewEmail: => ", req.body);
+//     const userExists = await User.findOne({ email });
+//     console.log("userExists: => ", userExists);
+//     if (!userExists) {
+//       return res.status(404).json(UserErrors.FAIL_SEARCHING_USER);
+//     } else {
+//       if (confirmationCode === userExists.confirmationCode) {
+//         if (emailChange !== email) {
+//           try {
+//             await userExists.updateOne({
+//               check: true,
+//               email: emailChange,
+//               emailChange: emailChange,
+//             });
+//             const updateUser = await User.findOne({ email: emailChange });
+//             return res.status(200).json({
+//               testCheckOk: updateUser.check == true ? true : false,
+//             });
+//           } catch (error) {
+//             return res.status(404).json("failed updating email");
+//           }
+//         } else {
+//           return res
+//             .status(400)
+//             .json(
+//               "El correo electrónico nuevo debe ser diferente al correo electrónico actual"
+//             );
+//         }
+//       } else {
+//         return res.status(404).json("email don't match");
+//       }
+//     }
+//   } catch (error) {
+//     return next(setError(500, "General error, check code"));
+//   }
+// };
+
+//! ------------------------------------------------------------------------
+//? -------------------------- VERIFY NEW EMAIL PRUEBA------------------------------
+//! ------------------------------------------------------------------------
 const verifyNewEmail = async (req, res, next) => {
   try {
-    const { email, confirmationCode, emailChange } = req.body;
-    console.log("verifyNewEmail: => ", req.body);
-    const userExists = await User.findOne({ email });
-    console.log("userExists: => ", userExists);
+    const { confirmationCode } = req.body;
+
+    const userExists = await User.findOne({ confirmationCode });
+
     if (!userExists) {
       return res.status(404).json(UserErrors.FAIL_SEARCHING_USER);
     } else {
-      if (confirmationCode === userExists.confirmationCode) {
-        if (emailChange !== email) {
-          try {
-            await userExists.updateOne({
-              check: true,
-              email: emailChange,
-              emailChange: emailChange,
-            });
-            const updateUser = await User.findOne({ email: emailChange });
-            return res.status(200).json({
-              testCheckOk: updateUser.check == true ? true : false,
-            });
-          } catch (error) {
-            return res.status(404).json("failed updating email");
-          }
-        } else {
-          return res
-            .status(400)
-            .json(
-              "El correo electrónico nuevo debe ser diferente al correo electrónico actual"
-            );
+      if (
+        userExists.emailChange &&
+        userExists.emailChange !== userExists.email
+      ) {
+        try {
+          await userExists.updateOne({
+            check: true,
+            email: userExists.emailChange,
+            emailChange: userExists.emailChange,
+          });
+          const updateUser = await User.findOne({
+            email: userExists.emailChange,
+          });
+          return res.status(200).json({
+            testCheckOk: updateUser.check == true ? true : false,
+          });
+        } catch (error) {
+          return res.status(404).json("failed updating email");
         }
       } else {
-        return res.status(404).json("email don't match");
+        return res
+          .status(400)
+          .json(
+            "El correo electrónico nuevo debe ser diferente al correo electrónico actual"
+          );
       }
     }
   } catch (error) {
@@ -987,10 +1033,10 @@ const updateUserRol = async (req, res, next) => {
 };
 
 module.exports = {
-  register,
+  //register,
   registerSlow,
   sendCode,
-  registerWithRedirect,
+  //registerWithRedirect,
   login,
   changeForgottenPassword,
   sendPassword,
