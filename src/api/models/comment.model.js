@@ -30,12 +30,11 @@ const CommentSchema = new mongoose.Schema(
     },
 
     //Like: Usuarios que le han dado like.
-    likes: [
-      {
-        type: String,
-        required: false,
-      },
-    ],
+    likes: {
+      type: [String],
+      required: false,
+      default: [],
+    },
 
     //Type: Privado o público
     commentType: {

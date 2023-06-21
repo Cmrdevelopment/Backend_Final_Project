@@ -46,11 +46,17 @@ const OfferSchema = new mongoose.Schema(
     // Tecnologías que piden en la oferta
     //technologies: { type: String, required: true },
 
-    technologies: [
-      {
-        type: String,
-      },
-    ],
+    // technologies: [
+    //   {
+    //     type: String,
+    //   },
+    // ],
+
+    technologies: {
+      type: [String],
+      required: false,
+      default: [],
+    },
 
     // Años de experiencia
     //Comentario: Revisar si puede usarse el max: 100.
@@ -69,18 +75,21 @@ const OfferSchema = new mongoose.Schema(
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Comment",
       required: false,
+      default: []
     },
 
     ratings: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Ratings",
       required: false,
+      default: [],
     },
 
     interestedUsers: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "User",
       required: false,
+      default: [],
     },
 
     // Estado de la Oferta
