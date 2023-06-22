@@ -22,6 +22,7 @@ const {
   resendCode,
   banned,
   following,
+  getFollowingStatus,
   updateUserRol,
 } = require("../controllers/user.controllers");
 
@@ -40,6 +41,7 @@ UserRoutes.patch("/update/update", [isAuth], upload.single("image"), update);
 UserRoutes.patch("/updateTechnology", [isAuth], updateTechnologies);
 UserRoutes.patch("/banned", [isAuth], banned);
 UserRoutes.patch("/following/:id", [isAuth], following);
+UserRoutes.get("/followingStatus/:id", [isAuth], getFollowingStatus)
 // UserRoutes.patch('/updateRatingsByMe', [isAuth], updateRatingsByMe);
 // UserRoutes.patch('/updateRatingsByOthers', [isAuth], updateRatingsByOthers);
 UserRoutes.delete("/", [isAuth], deleteUser);

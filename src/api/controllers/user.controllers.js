@@ -297,7 +297,7 @@ const changeForgottenPassword = async (req, res, next) => {
     } else {
       return res.status(404).json("User no register");
     }
-  } catch (error) {}
+  } catch (error) { }
 };
 
 const sendPassword = async (req, res, next) => {
@@ -467,11 +467,11 @@ const update = async (req, res, next) => {
       if (req.file) {
         updateUser.image == req.file.path
           ? testUpdate.push({
-              file: true,
-            })
+            file: true,
+          })
           : testUpdate.push({
-              file: false,
-            });
+            file: false,
+          });
       }
 
       return res.status(200).json({
@@ -997,6 +997,53 @@ const following = async (req, res, next) => {
   }
 };
 
+
+//! -----------------------------------------------------------------------------
+//? --------------------------------- GET FOLLOWING STATUS -------------------------
+//! -----------------------------------------------------------------------------
+const getFollowingStatus = async (req, res, next) => {
+  try {
+    // ID del usuario a seguir por parte del usuario logueado.
+    const { id } = req.params;
+
+    // ID del usuario logueado.
+    const { _id } = req.user._id;
+
+    const logedUser = await User.findById(_id);
+
+    if (!logedUser) {
+      return res.status(404).json({ error: "Loged user not found" });
+    }
+
+    const userToFollow = await User.findById(id);
+
+    if (!userToFollow) {
+      return res
+        .status(404)
+        .json({ error: "User to follow by loged user not found" });
+    }
+
+    const isUserInFollowingArr = logedUser.following.find(
+      (user) => user._id.toString() === id
+    );
+
+    if (isUserInFollowingArr === undefined) {
+      // El usuario a seguir no está en el array 'following', por lo tanto lo insertamos en el array.
+      return res.status(200).json({
+        status: "user is Not in following arr",
+      });
+    } else {
+      // El usuario a seguir está en el array 'following', por lo tanto lo eliminamos del array.
+      return res.status(200).json({
+        status: "user is in following arr",
+      });
+    }
+  } catch (error) {
+    return next(error);
+  }
+
+}
+
 //! -----------------------------------------------------------------------------
 //? --------------------------------- UPDATE CHANGE ROL -------------------------
 //! -----------------------------------------------------------------------------
@@ -1058,5 +1105,6 @@ module.exports = {
   resendCode,
   banned,
   following,
+  getFollowingStatus,
   updateUserRol,
 };
