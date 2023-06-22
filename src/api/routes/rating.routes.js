@@ -13,7 +13,7 @@ const ratingRoutes = express.Router();
 ratingRoutes.get("/", getAll);
 ratingRoutes.post("/", [isAuth], create);
 ratingRoutes.delete("/:id", [isAuth], deleteRating);
-ratingRoutes.put("/:id", [isAuth], updateRating);
+ratingRoutes.patch("/:id", [isAuth], updateRating);
 ratingRoutes.get("/:refType/:id", [isAuth], getByReference);
 
 module.exports = ratingRoutes;

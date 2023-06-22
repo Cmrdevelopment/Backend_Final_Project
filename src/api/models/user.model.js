@@ -60,12 +60,14 @@ const UserSchema = new mongoose.Schema(
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Offer",
       required: false,
+      default: [],
     },
 
     offersInterested: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Offer",
       required: false,
+      default: [],
     },
 
     // Comentarios hechos por me
@@ -73,6 +75,7 @@ const UserSchema = new mongoose.Schema(
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Comment",
       required: false,
+      default: [],
     },
 
     // Comentarios hechos por otros (a mi)
@@ -80,6 +83,7 @@ const UserSchema = new mongoose.Schema(
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Comment",
       required: false,
+      default: [],
     },
 
     // Valoraciones hechas por me
@@ -87,6 +91,7 @@ const UserSchema = new mongoose.Schema(
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Ratings",
       required: false,
+      default: [],
     },
 
     // Valoraciones hechas por otros (a mi)
@@ -94,12 +99,14 @@ const UserSchema = new mongoose.Schema(
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Ratings",
       required: false,
+      default: [],
     },
 
     experience: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Experience",
       required: false,
+      default: [],
     },
 
     banned: {
@@ -112,6 +119,7 @@ const UserSchema = new mongoose.Schema(
       type: [mongoose.Schema.Types.ObjectId],
       ref: "User",
       required: false,
+      default: [],
     },
 
     // user que me siguen
@@ -119,12 +127,14 @@ const UserSchema = new mongoose.Schema(
       type: [mongoose.Schema.Types.ObjectId],
       ref: "User",
       required: false,
+      default: [],
     },
 
     comentsThatILike: {
       type: [mongoose.Schema.Types.ObjectId],
       ref: "Comment",
       required: true,
+      default: [],
     },
   },
   {

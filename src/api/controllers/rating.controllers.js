@@ -65,6 +65,7 @@ const create = async (req, res, next) => {
     return res.status(500).json(error.message);
   }
 };
+
 //! -----------------------------------------------------------------------
 //? -------------------------------GET ALL ---------------------------------
 //! -----------------------------------------------------------------------
@@ -168,8 +169,7 @@ const updateRating = async (req, res, next) => {
 const getByReference = async (req, res, next) => {
   try {
     const { refType, id } = req.params;
-    // refType indica si la valoración viene de una oferta (Offer) o un usuario (User), y id es el ID de la valoración
-    console.log(id);
+    // refType indica si la valoración viene de una oferta (Offer) o un usuario (User), y id es el ID del usuaio queremos buscar sus valoraciones
     let ratings;
     if (refType === "Offer") {
       ratings = await Ratings.find({ referenceOffer: id }).populate(
@@ -177,7 +177,6 @@ const getByReference = async (req, res, next) => {
       );
       return res.status(200).json(ratings);
     } else if (refType === "User") {
-      console.log("entro");
       ratings = await Ratings.find({ referenceDeveloper: id });
       return res.status(200).json(ratings);
     } else {
