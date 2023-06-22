@@ -5,6 +5,7 @@ const {
   CommentErrors,
   CommentSuccess,
 } = require("../../helpers/jsonResponseMsgs");
+const { ObjectId } = require("mongodb");
 
 //! -----------------------------------------------------------------------
 //? -------------------------------CREATE COMMENT ---------------------------------
@@ -81,68 +82,6 @@ const getAll = async (req, res, next) => {
   }
 };
 
-//! ---------------------------------------------------------------------
-//? ------------------------------GETBYID -------------------------------
-//! ---------------------------------------------------------------------
-// const getById = async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-//     const commentById = await Comment.findById(id)
-//       .populate("owner")
-//       .populate("references");
-//     if (commentById) {
-//       return res.status(200).json(commentById);
-//     } else {
-//       return res.status(404).json(CommentErrors.FAIL_SEARCHING_COMMENT_BY_ID);
-//     }
-//   } catch (error) {
-//     return next(error);
-//   }
-// };
-//! ---------------------------------------------------------------------
-//? ----------------------------- GET BY APPNAME ------------------------
-//! ---------------------------------------------------------------------
-//Duda: Vamos a tener un buscador por nombre en comentarios?
-// const getByAppName = async (req, res, next) => {
-//     try {
-//       const { appName } = req.params;
-
-//       const AppNameByName = await App.find({ appName });
-
-//       if (AppNameByName) {
-//         return res.status(200).json(AppNameByName);
-//       } else {
-//         return res.status(404).json(AppErrors.FAIL_SEARCHING_APP_BY_NAME);
-//       }
-//     } catch (error) {
-//       return next(error);
-//     }
-//   };
-
-//! ---------------------------------------------------------------------
-//? ----------------------------- UPDATE --------------------------------
-//! ---------------------------------------------------------------------
-
-// const updateComment = async (req, res, next) => {
-//   try {
-//     const filterBody = {
-//       commentContent: req.body.commentContent,
-//       commentType: req.body.commentType, //Duda: Añadimos la posibilidad de actualizar el tipo de comentario mediante update? o lo capamos?
-//     };
-//     const { id } = req.params;
-//     const commentById = await Comment.findById(id);
-//     if (commentById) {
-//       const patchComment = new Comment(filterBody);
-//       patchComment._id = id;
-//       await Comment.findByIdAndUpdate(id, patchComment); // Guardar los cambios en la base de datos
-//       return res.status(200).json(await Comment.findById(id)); // Responder con el objeto actualizado
-//     } else {
-//       return res.status(404).json(CommentErrors.FAIL_UPDATING_COMMENT);
-//     }
-//   } catch (error) {
-//     return next(error);
-//   }
-// };
 //! ---------------------------------------------------------------------------------------
 //? ----------------------------- DELETE --------------------------------------------------
 //! ---------------------------------------------------------------------------------------
@@ -172,7 +111,7 @@ const deleteComment = async (req, res, next) => {
           deletedObject: deletedComment,
           message: CommentSuccess.SUCCESS_DELETING_COMMENT,
         });
-      } catch (error) { }
+      } catch (error) {}
     } else {
       return res.status(404).json(CommentErrors.FAIL_DELETING_COMMENT);
     }
@@ -188,6 +127,9 @@ const toggleFavorite = async (req, res, next) => {
   try {
     const commentId = req.params.id;
     const userId = req.user._id;
+    //userIdPageDetail es el propietario del comentario
+    const userIdPageDetail = req.body.userIdPageDetail;
+    console.log(userIdPageDetail);
 
     const commentFav = await Comment.findById(commentId);
     const user = await User.findById(userId);
@@ -198,12 +140,32 @@ const toggleFavorite = async (req, res, next) => {
 
     if (!commentFav.likes.includes(userId)) {
       await Comment.findByIdAndUpdate(commentId, { $push: { likes: userId } });
-      await User.findByIdAndUpdate(userId, { $push: { comentsThatILike: commentFav._id } });
-      return res.status(200).json("Comment added to liked comments");
+      await User.findByIdAndUpdate(userId, {
+        $push: { comentsThatILike: commentFav._id },
+      });
+      const findCommentByUserUpdate = await Comment.find({
+        referenceUser: new ObjectId(userIdPageDetail),
+      })
+        .sort({ createdAt: -1 })
+        .populate("owner");
+
+      return res.status(200).json({
+        results: "Comment added to liked comments",
+        data: findCommentByUserUpdate,
+      });
     } else {
       await Comment.findByIdAndUpdate(commentId, { $pull: { likes: userId } });
-      await User.findByIdAndUpdate(userId, { $pull: { comentsThatILike: commentFav._id } });
-      return res.status(200).json("Comment removed from liked comments");
+      await User.findByIdAndUpdate(userId, {
+        $pull: { comentsThatILike: commentFav._id },
+      });
+      return res.status(200).json({
+        result: "Comment removed from liked comments",
+        data: await Comment.find({
+          referenceUser: userIdPageDetail,
+        })
+          .sort({ createdAt: -1 })
+          .populate("owner"),
+      });
     }
   } catch (error) {
     return next(
@@ -220,16 +182,17 @@ const toggleFavorite = async (req, res, next) => {
 const getByReference = async (req, res, next) => {
   try {
     const { refType, id } = req.params;
-    // refType indica si la valoración viene de una oferta (Offer) o un usuario (User), y id es el ID de la valoración
-    console.log(id);
+
     let comments;
     if (refType === "Offer") {
-      comments = await Comment.find({ referenceOfferComment: id }).populate(
-        "owner referenceOfferComment"
-      );
+      comments = await Comment.find({ referenceOfferComment: id })
+        .sort({ createdAt: -1 })
+        .populate("owner referenceOfferComment");
       return res.status(200).json(comments);
     } else if (refType === "User") {
-      comments = await Comment.find({ referenceUser: id });
+      comments = await Comment.find({ referenceUser: id })
+        .sort({ createdAt: -1 })
+        .populate("owner");
       return res.status(200).json(comments);
     } else {
       return res.status(404).json({

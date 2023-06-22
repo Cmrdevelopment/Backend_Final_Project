@@ -492,8 +492,11 @@ const update = async (req, res, next) => {
 const updateTechnologies = async (req, res, next) => {
   try {
     const { _id } = req.user;
+    const customBody = {
+      technologies: req.body.technologies,
+    };
 
-    const oldUser = await User.findByIdAndUpdate(_id, req.body);
+    const oldUser = await User.findByIdAndUpdate(_id, customBody);
     if (oldUser) {
       return res.status(200).json({
         oldUser: oldUser,

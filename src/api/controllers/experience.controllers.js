@@ -112,6 +112,7 @@ const deleteExperience = async (req, res, next) => {
 
       await User.findByIdAndUpdate(idUser, {
         $pull: { experience: id },
+        //$pull: { technologies: id },
       });
 
       await Experience.findByIdAndDelete(id);
