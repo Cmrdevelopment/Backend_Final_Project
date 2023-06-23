@@ -12,7 +12,7 @@ const OfferSchema = new mongoose.Schema(
     // Tipo de la oferta
     offerType: {
       type: String,
-      enum: ["LookingForJob", "OfferMySelf"],
+      enum: ["CompanyOffer", "FreelandOffer"],
       required: true,
     },
     offerTitle: {
