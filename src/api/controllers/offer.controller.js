@@ -120,6 +120,60 @@ const toggleInterestedOfferToUser = async (req, res, next) => {
   }
 };
 
+
+//! -----------------------------------------------------------------------------
+//? --------------- GET OFFER FOLLOWING STATUS -------------------------
+//! -----------------------------------------------------------------------------
+const getOfferFollowingStatus = async (req, res, next) => {
+  try {
+    // ID de la oferta a seguir por parte del usuario logueado.
+    const { id } = req.params;
+
+    // ID del usuario logueado.
+    const { _id } = req.user._id;
+
+    const offerId = id;
+    const logerUserId = _id;
+
+    const logedUser = await User.findById(logerUserId);
+
+    if (!logedUser) {
+      return res.status(404).json({ error: "Loged user not found" });
+    }
+
+    const offerToFollow = await Offer.findById(offerId);
+
+    if (!offerToFollow) {
+      return res
+        .status(404)
+        .json({ error: "Offer to follow by loged user not found" });
+    }
+
+    const isOfferInOffersInterestedArr = logedUser.offersInterested.find(
+      (user) => user._id.toString() === offerId
+    );
+
+    if (isOfferInOffersInterestedArr === undefined) {
+      // La oferta a seguir no está en el array 'offersInterested', 
+      // reportamos que la oferta no está en el array.
+      return res.status(200).json({
+        status: "Offer is Not in user's offersInterested arr",
+      });
+    } else {
+      // La oferta a seguir está en el array 'offersInterested', 
+      // por lo tanto reportamos al front que la
+      // oferta en la que está ineresado el user está 
+      // en el array offersInterested.
+      return res.status(200).json({
+        status: "Offer is in user's offersInterested arr",
+      });
+    }
+  } catch (error) {
+    return next(error);
+  }
+
+}
+
 //! ---------------------------------------------------------------------
 //? ------------------------------GET ALL OFFERS --------------------------
 //! ---------------------------------------------------------------------
@@ -290,6 +344,7 @@ module.exports = {
   createOffer,
   addInterestedOfferToUser,
   toggleInterestedOfferToUser,
+  getOfferFollowingStatus,
   getAll,
   getById,
   getByOfferName,

@@ -4,6 +4,7 @@ const {
     createOffer,
     addInterestedOfferToUser,
     toggleInterestedOfferToUser,
+    getOfferFollowingStatus,
     updateOffer,
     getAll,
     getById,
@@ -21,6 +22,7 @@ OfferRoutes.patch('/updateOffer/:id', [isAuth], upload.single('image'), updateOf
 OfferRoutes.post('/createOffer', [isAuth], upload.single('image'), createOffer);
 OfferRoutes.post('/addInterestedOfferToUser', [isAuth], upload.single('image'), addInterestedOfferToUser);
 OfferRoutes.post('/toggleInterestedOfferToUser/:id', [isAuth], toggleInterestedOfferToUser);
+OfferRoutes.get("/offerFollowingStatus/:id", [isAuth], getOfferFollowingStatus)
 
 OfferRoutes.delete('/:id', deleteOffer);
 
