@@ -297,7 +297,7 @@ const changeForgottenPassword = async (req, res, next) => {
     } else {
       return res.status(404).json("User no register");
     }
-  } catch (error) { }
+  } catch (error) {}
 };
 
 const sendPassword = async (req, res, next) => {
@@ -467,11 +467,11 @@ const update = async (req, res, next) => {
       if (req.file) {
         updateUser.image == req.file.path
           ? testUpdate.push({
-            file: true,
-          })
+              file: true,
+            })
           : testUpdate.push({
-            file: false,
-          });
+              file: false,
+            });
       }
 
       return res.status(200).json({
@@ -495,7 +495,7 @@ const updateTechnologies = async (req, res, next) => {
     const customBody = {
       technologies: req.body.technologies,
     };
-
+    console.log(customBody);
     const oldUser = await User.findByIdAndUpdate(_id, customBody);
     if (oldUser) {
       return res.status(200).json({
@@ -997,7 +997,6 @@ const following = async (req, res, next) => {
   }
 };
 
-
 //! -----------------------------------------------------------------------------
 //? --------------------------------- GET FOLLOWING STATUS -------------------------
 //! -----------------------------------------------------------------------------
@@ -1041,8 +1040,7 @@ const getFollowingStatus = async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
-
-}
+};
 
 //! -----------------------------------------------------------------------------
 //? --------------------------------- UPDATE CHANGE ROL -------------------------
