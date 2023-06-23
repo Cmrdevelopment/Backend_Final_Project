@@ -59,11 +59,11 @@ const OfferSchema = new mongoose.Schema(
     },
 
     // Años de experiencia
-    //Comentario: Revisar si puede usarse el max: 100.
     experienceYears: {
       type: Number,
       min: 0,
       max: 100,
+      default: 0
     },
 
     // Logo de la compañia

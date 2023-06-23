@@ -14,6 +14,7 @@ const createOffer = async (req, res, next) => {
     const offerBody = {
       offerTitle: req.body.offerTitle,
       offerType: req.body.offerType,
+      experienceYears: req.body.experienceYears,
       annualSalary: req.body.annualSalary,
       description: req.body.description,
       city: req.body.city,
@@ -67,6 +68,7 @@ const addInterestedOfferToUser = async (req, res, next) => {
     const offerBody = {
       offerTitle: req.body.offerTitle,
       offerType: req.body.offerType,
+      experienceYears: req.body.experienceYears,
       annualSalary: req.body.annualSalary,
       description: req.body.description,
       city: req.body.city,
@@ -278,7 +280,6 @@ const updateOffer = async (req, res, next) => {
 
     const offerById = await Offer.findById(id);
     if (offerById) {
-      console.log("updateOffer -> filterBody: ", filterBody);
       const patchOffer = new Offer(filterBody);
       patchOffer._id = id;
       await Offer.findByIdAndUpdate(id, patchOffer); // Guardar los cambios en la base de datos
