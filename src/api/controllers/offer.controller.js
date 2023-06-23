@@ -10,6 +10,7 @@ const { OfferErrors } = require("../../helpers/jsonResponseMsgs");
 const createOffer = async (req, res, next) => {
   try {
     const arrayTechnology = req.body.technologies.split(",");
+
     const offerBody = {
       offerTitle: req.body.offerTitle,
       offerType: req.body.offerType,
@@ -23,6 +24,16 @@ const createOffer = async (req, res, next) => {
     };
 
     const newOffer = new Offer(offerBody);
+
+    try {
+      if (req.file) {
+        newOffer.image = req.file.path;
+      } else {
+        newOffer.image = "https://pic.onlinewebfonts.com/svg/img_181369.png";
+      }
+    } catch (error) {
+      return res.status(404).json("Error creating offer");
+    }
 
     try {
       // aqui guardamos en la base de datos
