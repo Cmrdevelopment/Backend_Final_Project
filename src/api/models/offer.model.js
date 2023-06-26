@@ -54,7 +54,7 @@ const OfferSchema = new mongoose.Schema(
 
     technologies: {
       type: [String],
-      required: false,
+      required: true,
       default: [],
     },
 
@@ -63,7 +63,7 @@ const OfferSchema = new mongoose.Schema(
       type: Number,
       min: 0,
       max: 100,
-      default: 0
+      default: 0,
     },
 
     // Logo de la compañia

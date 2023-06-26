@@ -9,7 +9,7 @@ const { OfferErrors } = require("../../helpers/jsonResponseMsgs");
 //! -----------------------------------------------------------------------
 const createOffer = async (req, res, next) => {
   try {
-    const arrayTechnology = req.body.technologies.split(",");
+    // const arrayTechnology = req.body.technologies.split(",");
 
     const offerBody = {
       offerTitle: req.body.offerTitle,
@@ -19,7 +19,7 @@ const createOffer = async (req, res, next) => {
       description: req.body.description,
       city: req.body.city,
       jobType: req.body.jobType,
-      technologies: arrayTechnology,
+      technologies: req.body.technologies,
       offerState: req.body.offerState,
       owner: req.user._id,
     };
@@ -118,21 +118,34 @@ const toggleInterestedOfferToUser = async (req, res, next) => {
       return res.status(404).json("User or offer not found");
     }
 
-    const offerInUserOffersInterestedArray = await User.findOne({ offersInterested: offerId });
+    const offerInUserOffersInterestedArray = await User.findOne({
+      offersInterested: offerId,
+    });
     if (!offerInUserOffersInterestedArray) {
-      await User.findByIdAndUpdate(userId, { $push: { offersInterested: offerId } });
-      await Offer.findByIdAndUpdate(offerId, { $push: { interestedUsers: userId } });
-      return res.status(200).json("Offer added to user's offersInterested array");
+      await User.findByIdAndUpdate(userId, {
+        $push: { offersInterested: offerId },
+      });
+      await Offer.findByIdAndUpdate(offerId, {
+        $push: { interestedUsers: userId },
+      });
+      return res
+        .status(200)
+        .json("Offer added to user's offersInterested array");
     } else {
-      await User.findByIdAndUpdate(userId, { $pull: { offersInterested: offerId } });
-      await Offer.findByIdAndUpdate(offerId, { $pull: { interestedUsers: userId } });
-      return res.status(200).json("Offer removed from user's offersInterested array");
+      await User.findByIdAndUpdate(userId, {
+        $pull: { offersInterested: offerId },
+      });
+      await Offer.findByIdAndUpdate(offerId, {
+        $pull: { interestedUsers: userId },
+      });
+      return res
+        .status(200)
+        .json("Offer removed from user's offersInterested array");
     }
   } catch (error) {
     return res.status(500).json(error.message);
   }
 };
-
 
 //! -----------------------------------------------------------------------------
 //? --------------- GET OFFER FOLLOWING STATUS -------------------------
@@ -167,15 +180,15 @@ const getOfferFollowingStatus = async (req, res, next) => {
     );
 
     if (isOfferInOffersInterestedArr === undefined) {
-      // La oferta a seguir no está en el array 'offersInterested', 
+      // La oferta a seguir no está en el array 'offersInterested',
       // reportamos que la oferta no está en el array.
       return res.status(200).json({
         status: "Offer is Not in user's offersInterested arr",
       });
     } else {
-      // La oferta a seguir está en el array 'offersInterested', 
+      // La oferta a seguir está en el array 'offersInterested',
       // por lo tanto reportamos al front que la
-      // oferta en la que está ineresado el user está 
+      // oferta en la que está ineresado el user está
       // en el array offersInterested.
       return res.status(200).json({
         status: "Offer is in user's offersInterested arr",
@@ -184,8 +197,7 @@ const getOfferFollowingStatus = async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
-
-}
+};
 
 //! ---------------------------------------------------------------------
 //? ------------------------------GET ALL OFFERS --------------------------
