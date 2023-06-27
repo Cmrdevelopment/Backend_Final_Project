@@ -8,6 +8,7 @@ const { OfferErrors } = require("../../helpers/jsonResponseMsgs");
 //? -------------------------------CREATE OFFER ---------------------------------
 //! -----------------------------------------------------------------------
 const createOffer = async (req, res, next) => {
+  console.log(req.file);
   try {
     // const arrayTechnology = req.body.technologies.split(",");
 
@@ -28,7 +29,8 @@ const createOffer = async (req, res, next) => {
     };
 
     const newOffer = new Offer(offerBody);
-
+    console.log(offerBody);
+    console.log(req.body);
     try {
       if (req.file) {
         newOffer.image = req.file.path;

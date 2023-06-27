@@ -590,9 +590,31 @@ const getById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const userById = await User.findById(id).populate(
-      "technologies offersCreated offersInterested commentsByMe commentsByOthers ratingsByMe ratingsByOthers experience following followers comentsThatILike"
-    );
+    const userById = await User.findById(id)
+      .populate(
+        "technologies offersInterested commentsByMe commentsByOthers ratingsByMe ratingsByOthers experience following followers comentsThatILike"
+      )
+      .populate({ path: "offersCreated", populate: { path: "comments" } })
+      .populate({
+        path: "chats",
+        populate: {
+          path: "menssages",
+          populate: { path: "owner" },
+        },
+      })
+      .populate({
+        path: "chats",
+        populate: {
+          path: "userOne",
+        },
+      })
+      .populate({
+        path: "chats",
+        populate: {
+          path: "userTwo",
+        },
+      });
+
     if (userById) {
       return res.status(200).json(userById);
     } else {
