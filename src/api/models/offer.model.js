@@ -25,7 +25,22 @@ const OfferSchema = new mongoose.Schema(
       required: false,
     },
 
-    description: {
+    descriptionGeneral: {
+      type: String,
+      required: true,
+    },
+
+    descriptionResponsabilities: {
+      type: String,
+      required: true,
+    },
+
+    descriptionRequires: {
+      type: String,
+      required: true,
+    },
+
+    descriptionSalary: {
       type: String,
       required: true,
     },
