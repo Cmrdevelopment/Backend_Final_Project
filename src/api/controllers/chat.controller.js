@@ -100,7 +100,7 @@ const newComment = async (req, res, next) => {
                   const userOne = req.user._id;
                   const userTwo = req.body.referenceUser
                     ? req.body.referenceUser
-                    : await Offer.findById(body.referenceOfferComment).owner
+                    : await Offer.findById(req.body.referenceOfferComment).owner
                         ._id;
 
                   const chatExistOne = await Chat.findOne({
@@ -108,8 +108,8 @@ const newComment = async (req, res, next) => {
                     userTwo: new ObjectId(
                       req.body.referenceUser
                         ? req.body.referenceUser
-                        : await Offer.findById(body.referenceOfferComment).owner
-                            ._id
+                        : await Offer.findById(req.body.referenceOfferComment)
+                            .owner._id
                     ),
                   });
 
@@ -118,8 +118,8 @@ const newComment = async (req, res, next) => {
                     userOne: new ObjectId(
                       req.body.referenceUser
                         ? req.body.referenceUser
-                        : await Offer.findById(body.referenceOfferComment).owner
-                            ._id
+                        : await Offer.findById(req.body.referenceOfferComment)
+                            .owner._id
                     ),
                   });
 
@@ -193,8 +193,8 @@ const newComment = async (req, res, next) => {
                       const userOne = req.user._id;
                       const userTwo = req.body.referenceUser
                         ? req.body.referenceUser
-                        : await Offer.findById(body.referenceOfferComment).owner
-                            ._id;
+                        : await Offer.findById(req.body.referenceOfferComment)
+                            .owner._id;
 
                       const chatExistOne = await Chat.findOne({
                         userOne,
