@@ -99,28 +99,26 @@ const newComment = async (req, res, next) => {
                 try {
                   const userReal = await Offer.findById(
                     req.body.referenceOfferComment
-                  );
+                  ).populate("owner");
+
+                  console.log(userReal);
                   const userOne = req.user._id;
                   const userTwo = req.body.referenceUser
                     ? req.body.referenceUser
-                    : userReal.owner._id;
+                    : userReal.owner[0]._id;
 
                   const chatExistOne = await Chat.findOne({
                     userOne: req.user._id,
-                    userTwo: new ObjectId(
-                      req.body.referenceUser
-                        ? req.body.referenceUser
-                        : userReal.owner._id
-                    ),
+                    userTwo: req.body.referenceUser
+                      ? req.body.referenceUser
+                      : userReal.owner[0]._id,
                   });
-
+                  console.log();
                   const chatExistTwo = await Chat.findOne({
                     userTwo: req.user._id,
-                    userOne: new ObjectId(
-                      req.body.referenceUser
-                        ? req.body.referenceUser
-                        : userReal.owner._id
-                    ),
+                    userOne: req.body.referenceUser
+                      ? req.body.referenceUser
+                      : userReal.owner[0]._id,
                   });
 
                   console.log(chatExistOne);
@@ -128,6 +126,7 @@ const newComment = async (req, res, next) => {
 
                   if (!chatExistOne && !chatExistTwo) {
                     console.log("ENTRO POR EL IF");
+                    console.log({ userOne, userTwo });
                     const newChat = new Chat({ userOne, userTwo });
                     newChat.menssages = [newComment._id];
                     try {
@@ -160,6 +159,7 @@ const newComment = async (req, res, next) => {
                         }
                       }
                     } catch (error) {
+                      console.log("entro en el error ");
                       return res.status(404).json(error.message);
                     }
                   } else {
@@ -193,7 +193,7 @@ const newComment = async (req, res, next) => {
                       const userOne = req.user._id;
                       const userTwo = req.body.referenceUser
                         ? req.body.referenceUser
-                        : userReal.owner._id;
+                        : userReal.owner[0]._id;
 
                       const chatExistOne = await Chat.findOne({
                         userOne,
