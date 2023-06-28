@@ -100,6 +100,10 @@ const newComment = async (req, res, next) => {
                   const userReal = await Offer.findById(
                     req.body.referenceOfferComment
                   ).populate("owner");
+                  console.log("userReal:", userReal);
+                  await User.findByIdAndUpdate(userReal.owner[0]._id, {
+                    $push: { commentsByOthers: newComment._id },
+                  });
 
                   console.log(userReal);
                   const userOne = req.user._id;
