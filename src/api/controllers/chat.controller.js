@@ -97,19 +97,20 @@ const newComment = async (req, res, next) => {
                   $push: { comments: newComment._id },
                 });
                 try {
+                  const userReal = await Offer.findById(
+                    req.body.referenceOfferComment
+                  );
                   const userOne = req.user._id;
                   const userTwo = req.body.referenceUser
                     ? req.body.referenceUser
-                    : await Offer.findById(req.body.referenceOfferComment).owner
-                        ._id;
+                    : userReal.owner._id;
 
                   const chatExistOne = await Chat.findOne({
                     userOne: req.user._id,
                     userTwo: new ObjectId(
                       req.body.referenceUser
                         ? req.body.referenceUser
-                        : await Offer.findById(req.body.referenceOfferComment)
-                            .owner._id
+                        : userReal.owner._id
                     ),
                   });
 
@@ -118,8 +119,7 @@ const newComment = async (req, res, next) => {
                     userOne: new ObjectId(
                       req.body.referenceUser
                         ? req.body.referenceUser
-                        : await Offer.findById(req.body.referenceOfferComment)
-                            .owner._id
+                        : userReal.owner._id
                     ),
                   });
 
@@ -193,8 +193,7 @@ const newComment = async (req, res, next) => {
                       const userOne = req.user._id;
                       const userTwo = req.body.referenceUser
                         ? req.body.referenceUser
-                        : await Offer.findById(req.body.referenceOfferComment)
-                            .owner._id;
+                        : userReal.owner._id;
 
                       const chatExistOne = await Chat.findOne({
                         userOne,
