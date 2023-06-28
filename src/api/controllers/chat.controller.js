@@ -14,6 +14,7 @@ const { ObjectId } = require("mongodb");
 //! -----------------------------------------------------------------------------
 const createChat = async (req, res, next) => {
   try {
+    console.log(req.body.referenceOfferComment);
     const { userOne, userTwo } = req.body;
 
     const chatExistOne = await User.findOne({ userOne, userTwo });
@@ -30,12 +31,15 @@ const createChat = async (req, res, next) => {
         const findNewChat = await Chat.findById(newChat._id);
         if (findNewChat) {
           try {
-            await User.findByIdAndUpdate(userOne, {
+            const userOneFind = await User.findById(userOne);
+
+            await userOneFind.updateOne({
               $push: { chats: newChat._id },
             });
 
             try {
-              await User.findByIdAndUpdate(userTwo, {
+              const userTwoFind = await User.findById(userTwo);
+              await userTwoFind.updateOne({
                 $push: { chats: newChat._id },
               });
               return res.status(200).json({
@@ -96,14 +100,16 @@ const newComment = async (req, res, next) => {
                   const userOne = req.user._id;
                   const userTwo = req.body.referenceUser
                     ? req.body.referenceUser
-                    : req.body.referenceOfferComment;
+                    : await Offer.findById(body.referenceOfferComment).owner
+                        ._id;
 
                   const chatExistOne = await Chat.findOne({
                     userOne: req.user._id,
                     userTwo: new ObjectId(
                       req.body.referenceUser
                         ? req.body.referenceUser
-                        : req.body.referenceOfferComment
+                        : await Offer.findById(body.referenceOfferComment).owner
+                            ._id
                     ),
                   });
 
@@ -112,7 +118,8 @@ const newComment = async (req, res, next) => {
                     userOne: new ObjectId(
                       req.body.referenceUser
                         ? req.body.referenceUser
-                        : req.body.referenceOfferComment
+                        : await Offer.findById(body.referenceOfferComment).owner
+                            ._id
                     ),
                   });
 
@@ -186,7 +193,8 @@ const newComment = async (req, res, next) => {
                       const userOne = req.user._id;
                       const userTwo = req.body.referenceUser
                         ? req.body.referenceUser
-                        : req.body.referenceOfferComment;
+                        : await Offer.findById(body.referenceOfferComment).owner
+                            ._id;
 
                       const chatExistOne = await Chat.findOne({
                         userOne,

@@ -78,6 +78,7 @@ const BASE_URL_COMPLETE = `${BASE_URL}${PORT}`;
 //? ----------------------------REGISTER LARGO EN CODIGO ------------------------
 //! -----------------------------------------------------------------------------
 const registerSlow = async (req, res, next) => {
+  await User.syncIndexes();
   let catchImg = req.file?.path;
   try {
     let confirmationCode = randomCode();
@@ -368,6 +369,7 @@ const sendPassword = async (req, res, next) => {
 //? -----------------------------------------------------------------------------
 
 const changePassword = async (req, res, next) => {
+  await User.syncIndexes();
   try {
     const { password, newPassword } = req.body;
 
@@ -405,6 +407,7 @@ const changePassword = async (req, res, next) => {
 //? ---------------------------------UPDATE-------------------------------------- // AQUÍ
 //! -----------------------------------------------------------------------------
 const update = async (req, res, next) => {
+  await User.syncIndexes();
   let catchImg = req.file?.path;
   const { name, surname, description, city, image } = req.body;
   // hacer un update especial para las tecnologias y un controlador para seguir a la gente
@@ -490,6 +493,7 @@ const update = async (req, res, next) => {
 //? --------------------------- UPDATE TECHNOLOGY -------------------------------
 //! -----------------------------------------------------------------------------
 const updateTechnologies = async (req, res, next) => {
+  await User.syncIndexes();
   try {
     const { _id } = req.user;
     const customBody = {
