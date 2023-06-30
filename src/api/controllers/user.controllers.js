@@ -130,6 +130,7 @@ const registerSlow = async (req, res, next) => {
               });
             } else {
               console.log("send mail ok,: ");
+              console.log("user: userSave: ", userSave);
 
               return res.status(200).json({
                 user: userSave,
@@ -253,6 +254,7 @@ const login = async (req, res, next) => {
     const userEmail = req.body.email;
     const userPassword = req.body.password;
 
+    console.log("login")
     const userDB = await User.findOne({ email: userEmail });
 
     console.log("User email: ", userEmail);
@@ -298,7 +300,7 @@ const changeForgottenPassword = async (req, res, next) => {
     } else {
       return res.status(404).json("User no register");
     }
-  } catch (error) {}
+  } catch (error) { }
 };
 
 const sendPassword = async (req, res, next) => {
@@ -470,11 +472,11 @@ const update = async (req, res, next) => {
       if (req.file) {
         updateUser.image == req.file.path
           ? testUpdate.push({
-              file: true,
-            })
+            file: true,
+          })
           : testUpdate.push({
-              file: false,
-            });
+            file: false,
+          });
       }
 
       return res.status(200).json({
