@@ -124,8 +124,10 @@ const toggleInterestedOfferToUser = async (req, res, next) => {
     }
 
     const offerInUserOffersInterestedArray = await User.findOne({
+      _id: userId,
       offersInterested: offerId,
     });
+
     if (!offerInUserOffersInterestedArray) {
       await User.findByIdAndUpdate(userId, {
         $push: { offersInterested: offerId },
@@ -180,11 +182,11 @@ const getOfferFollowingStatus = async (req, res, next) => {
         .json({ error: "Offer to follow by loged user not found" });
     }
 
-    const isOfferInOffersInterestedArr = logedUser.offersInterested.find(
-      (user) => user._id.toString() === offerId
+    const isOfferInUserOffersInterestedArr = logedUser.offersInterested.find(
+      (offer) => offer._id.toString() === offerId
     );
 
-    if (isOfferInOffersInterestedArr === undefined) {
+    if (isOfferInUserOffersInterestedArr === undefined) {
       // La oferta a seguir no está en el array 'offersInterested',
       // reportamos que la oferta no está en el array.
       return res.status(200).json({
